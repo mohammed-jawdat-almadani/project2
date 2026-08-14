@@ -24,6 +24,8 @@ import '../../features/auth/domain/usecases/forgot_password_usecase.dart'
 import '../../features/auth/domain/usecases/login_usecase.dart' as _i188;
 import '../../features/auth/domain/usecases/send_register_otp_usecase.dart'
     as _i1013;
+import '../../features/auth/domain/usecases/verify_register_otp_usecase.dart'
+    as _i709;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import 'register_module.dart' as _i291;
 
@@ -57,10 +59,14 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i1013.SendRegisterOtpUseCase>(
       () => _i1013.SendRegisterOtpUseCase(gh<_i787.AuthRepository>()),
     );
+    gh.factory<_i709.VerifyRegisterOtpUseCase>(
+      () => _i709.VerifyRegisterOtpUseCase(gh<_i787.AuthRepository>()),
+    );
     gh.factory<_i797.AuthBloc>(
       () => _i797.AuthBloc(
         gh<_i188.LoginUseCase>(),
         gh<_i1013.SendRegisterOtpUseCase>(),
+        gh<_i709.VerifyRegisterOtpUseCase>(),
         gh<_i560.ForgotPasswordUseCase>(),
       ),
     );

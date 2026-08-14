@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/send_register_otp_usecase.dart';
+import '../../domain/usecases/verify_register_otp_usecase.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
 
 part 'auth_event.dart';
@@ -14,15 +15,18 @@ part 'auth_bloc.freezed.dart';
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final SendRegisterOtpUseCase sendRegisterOtpUseCase;
+  final VerifyRegisterOtpUseCase verifyRegisterOtpUseCase;
   final ForgotPasswordUseCase forgotPasswordUseCase;
 
   AuthBloc(
     this.loginUseCase,
     this.sendRegisterOtpUseCase,
+    this.verifyRegisterOtpUseCase,
     this.forgotPasswordUseCase,
   ) : super(const AuthState.initial()) {
     on<_Login>(_onLogin);
     on<_RegisterStart>(_onRegisterStart);
+    on<_VerifyOtp>(_onVerifyOtp);
     on<_ForgotPassword>(_onForgotPassword);
   }
 
@@ -50,6 +54,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(AuthState.error(failure.message)),
       (_) => emit(const AuthState.passwordResetEmailSent()),
+    );
+  }
+
+  Future<void> _onVerifyOtp(_VerifyOtp event, Emitter<AuthState> emit) async {
+    emit(const AuthState.loading());
+    final result = await verifyRegisterOtpUseCase(VerifyRegisterOtpParams(phone: event.phone, code: event.code));
+    result.fold(
+      (failure) => emit(AuthState.error(failure.message)),
+      (ticket) => emit(AuthState.otpVerified(ticket)),
     );
   }
 }

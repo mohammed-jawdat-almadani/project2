@@ -5,5 +5,6 @@ import '../entities/user.dart';
 abstract class AuthRepository {
   Future<Either<Failure, User>> login({required String phone, required String password});
   Future<Either<Failure, String?>> sendRegisterOtp({required String phone});
+  Future<Either<Failure, String>> verifyRegisterOtp({required String phone, required String code});
   Future<Either<Failure, void>> forgotPassword({required String phone});
 }

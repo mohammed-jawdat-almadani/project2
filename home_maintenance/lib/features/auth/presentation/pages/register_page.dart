@@ -29,6 +29,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('تم إرسال الرمز بنجاح. ${debugCode != null ? 'Debug Code: $debugCode' : ''}')),
               );
+              context.push('/register/otp', extra: _phoneController.text);
             },
             error: (msg) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));

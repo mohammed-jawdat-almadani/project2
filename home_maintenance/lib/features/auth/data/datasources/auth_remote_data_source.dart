@@ -7,6 +7,7 @@ import '../models/user_model.dart';
 abstract class AuthRemoteDataSource {
   Future<UserModel> login({required String phone, required String password});
   Future<String?> sendRegisterOtp({required String phone});
+  Future<String> verifyRegisterOtp({required String phone, required String code});
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
@@ -51,6 +52,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return response.data['debug_code']?.toString();
+    } else {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
+  }
+
+  @override
+  Future<String> verifyRegisterOtp({required String phone, required String code}) async {
+    final response = await _dio.post(
+      '/api/auth/register/verify',
+      data: {
+        'phone': phone,
+        'code': code,
+      },
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return response.data['ticket'].toString();
     } else {
       throw DioException(
         requestOptions: response.requestOptions,

@@ -42,6 +42,21 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<Failure, String>> verifyRegisterOtp({required String phone, required String code}) async {
+    try {
+      final ticket = await _remoteDataSource.verifyRegisterOtp(phone: phone, code: code);
+      return Right(ticket);
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400 || e.response?.statusCode == 422) {
+        return const Left(ServerFailure('رمز التحقق غير صحيح.'));
+      }
+      return Left(ServerFailure(e.message ?? 'Unknown error occurred.'));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> forgotPassword({required String phone}) {
     // TODO: implement forgotPassword
     throw UnimplementedError();
