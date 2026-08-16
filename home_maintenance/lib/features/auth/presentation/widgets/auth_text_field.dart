@@ -3,21 +3,28 @@ import 'package:flutter/material.dart';
 class AuthTextField extends StatelessWidget {
   final String label;
   final String hint;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool isPassword;
   final bool isPhone;
+  final String? errorText;
+  final ValueChanged<String>? onChanged;
 
   const AuthTextField({
     super.key,
     required this.label,
     required this.hint,
-    required this.controller,
+    this.controller,
     this.isPassword = false,
     this.isPhone = false,
+    this.errorText,
+    this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final borderColor = errorText != null ? Colors.red : const Color(0xFFC3C6D4);
+    final isError = errorText != null;
+
     if (isPhone) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,7 +34,7 @@ class AuthTextField extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFC3C6D4)),
+              border: Border.all(color: borderColor),
             ),
             child: Directionality(
               textDirection: TextDirection.ltr,
@@ -35,9 +42,10 @@ class AuthTextField extends StatelessWidget {
                 children: [
                   Container(
                     width: 88,
-                    decoration: const BoxDecoration(
-                      color: Color(0x5CE1E2EC), // 0.36 opacity
-                      borderRadius: BorderRadius.horizontal(left: Radius.circular(11)),
+                    decoration: BoxDecoration(
+                      color: const Color(0x5CE1E2EC), // 0.36 opacity
+                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(11)),
+                      border: isError ? const Border(right: BorderSide(color: Colors.red)) : null,
                     ),
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -60,7 +68,7 @@ class AuthTextField extends StatelessWidget {
                   Container(
                     width: 1,
                     height: 32,
-                    color: const Color(0xFFC3C6D4),
+                    color: isError ? Colors.red : const Color(0xFFC3C6D4),
                   ),
                   Expanded(
                     child: Directionality(
@@ -69,6 +77,7 @@ class AuthTextField extends StatelessWidget {
                         controller: controller,
                         keyboardType: TextInputType.phone,
                         textAlign: TextAlign.right,
+                        onChanged: onChanged,
                         decoration: InputDecoration(
                           hintText: hint,
                           hintStyle: const TextStyle(
@@ -85,6 +94,14 @@ class AuthTextField extends StatelessWidget {
               ),
             ),
           ),
+          if (errorText != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+              child: Text(
+                errorText!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ),
         ],
       );
     }
@@ -105,12 +122,13 @@ class AuthTextField extends StatelessWidget {
           height: 56,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF737785)),
+            border: Border.all(color: borderColor),
           ),
           child: TextFormField(
             controller: controller,
             obscureText: isPassword,
             textAlign: TextAlign.right,
+            onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: const TextStyle(
@@ -123,6 +141,14 @@ class AuthTextField extends StatelessWidget {
             ),
           ),
         ),
+        if (errorText != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, right: 8.0),
+            child: Text(
+              errorText!,
+              style: const TextStyle(color: Colors.red, fontSize: 12),
+            ),
+          ),
       ],
     );
   }
