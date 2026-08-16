@@ -14,61 +14,30 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthEvent {
 
- String get phone;
-/// Create a copy of AuthEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$AuthEventCopyWith<AuthEvent> get copyWith => _$AuthEventCopyWithImpl<AuthEvent>(this as AuthEvent, _$identity);
+
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthEvent&&(identical(other.phone, phone) || other.phone == phone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthEvent);
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,phone);
+int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'AuthEvent(phone: $phone)';
+  return 'AuthEvent()';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $AuthEventCopyWith<$Res>  {
-  factory $AuthEventCopyWith(AuthEvent value, $Res Function(AuthEvent) _then) = _$AuthEventCopyWithImpl;
-@useResult
-$Res call({
- String phone
-});
-
-
-
-
-}
-/// @nodoc
-class _$AuthEventCopyWithImpl<$Res>
-    implements $AuthEventCopyWith<$Res> {
-  _$AuthEventCopyWithImpl(this._self, this._then);
-
-  final AuthEvent _self;
-  final $Res Function(AuthEvent) _then;
-
-/// Create a copy of AuthEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? phone = null,}) {
-  return _then(_self.copyWith(
-phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
+class $AuthEventCopyWith<$Res>  {
+$AuthEventCopyWith(AuthEvent _, $Res Function(AuthEvent) __);
 }
 
 
@@ -86,14 +55,17 @@ extension AuthEventPatterns on AuthEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Login value)?  login,TResult Function( _RegisterStart value)?  registerStart,TResult Function( _ForgotPassword value)?  forgotPassword,TResult Function( _VerifyOtp value)?  verifyOtp,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Login value)?  login,TResult Function( _RegisterStart value)?  registerStart,TResult Function( _ForgotPassword value)?  forgotPassword,TResult Function( _VerifyOtp value)?  verifyOtp,TResult Function( _LoadCategories value)?  loadCategories,TResult Function( _CheckAuthStatus value)?  checkAuthStatus,TResult Function( _RegisterProviderSubmit value)?  registerProviderSubmit,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Login() when login != null:
 return login(_that);case _RegisterStart() when registerStart != null:
 return registerStart(_that);case _ForgotPassword() when forgotPassword != null:
 return forgotPassword(_that);case _VerifyOtp() when verifyOtp != null:
-return verifyOtp(_that);case _:
+return verifyOtp(_that);case _LoadCategories() when loadCategories != null:
+return loadCategories(_that);case _CheckAuthStatus() when checkAuthStatus != null:
+return checkAuthStatus(_that);case _RegisterProviderSubmit() when registerProviderSubmit != null:
+return registerProviderSubmit(_that);case _:
   return orElse();
 
 }
@@ -111,14 +83,20 @@ return verifyOtp(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Login value)  login,required TResult Function( _RegisterStart value)  registerStart,required TResult Function( _ForgotPassword value)  forgotPassword,required TResult Function( _VerifyOtp value)  verifyOtp,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Login value)  login,required TResult Function( _RegisterStart value)  registerStart,required TResult Function( _ForgotPassword value)  forgotPassword,required TResult Function( _VerifyOtp value)  verifyOtp,required TResult Function( _LoadCategories value)  loadCategories,required TResult Function( _CheckAuthStatus value)  checkAuthStatus,required TResult Function( _RegisterProviderSubmit value)  registerProviderSubmit,}){
 final _that = this;
 switch (_that) {
 case _Login():
 return login(_that);case _RegisterStart():
 return registerStart(_that);case _ForgotPassword():
 return forgotPassword(_that);case _VerifyOtp():
-return verifyOtp(_that);}
+return verifyOtp(_that);case _LoadCategories():
+return loadCategories(_that);case _CheckAuthStatus():
+return checkAuthStatus(_that);case _RegisterProviderSubmit():
+return registerProviderSubmit(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -132,14 +110,17 @@ return verifyOtp(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Login value)?  login,TResult? Function( _RegisterStart value)?  registerStart,TResult? Function( _ForgotPassword value)?  forgotPassword,TResult? Function( _VerifyOtp value)?  verifyOtp,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Login value)?  login,TResult? Function( _RegisterStart value)?  registerStart,TResult? Function( _ForgotPassword value)?  forgotPassword,TResult? Function( _VerifyOtp value)?  verifyOtp,TResult? Function( _LoadCategories value)?  loadCategories,TResult? Function( _CheckAuthStatus value)?  checkAuthStatus,TResult? Function( _RegisterProviderSubmit value)?  registerProviderSubmit,}){
 final _that = this;
 switch (_that) {
 case _Login() when login != null:
 return login(_that);case _RegisterStart() when registerStart != null:
 return registerStart(_that);case _ForgotPassword() when forgotPassword != null:
 return forgotPassword(_that);case _VerifyOtp() when verifyOtp != null:
-return verifyOtp(_that);case _:
+return verifyOtp(_that);case _LoadCategories() when loadCategories != null:
+return loadCategories(_that);case _CheckAuthStatus() when checkAuthStatus != null:
+return checkAuthStatus(_that);case _RegisterProviderSubmit() when registerProviderSubmit != null:
+return registerProviderSubmit(_that);case _:
   return null;
 
 }
@@ -156,13 +137,16 @@ return verifyOtp(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String phone,  String password)?  login,TResult Function( String phone)?  registerStart,TResult Function( String phone)?  forgotPassword,TResult Function( String phone,  String code)?  verifyOtp,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String phone,  String password)?  login,TResult Function( String phone)?  registerStart,TResult Function( String phone)?  forgotPassword,TResult Function( String phone,  String code)?  verifyOtp,TResult Function()?  loadCategories,TResult Function()?  checkAuthStatus,TResult Function( String phone,  String ticket,  String firstName,  String lastName,  List<int> serviceCategoryIds,  String password,  String passwordConfirmation,  String? selfiePath,  String? idFrontPath,  String? idBackPath)?  registerProviderSubmit,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Login() when login != null:
 return login(_that.phone,_that.password);case _RegisterStart() when registerStart != null:
 return registerStart(_that.phone);case _ForgotPassword() when forgotPassword != null:
 return forgotPassword(_that.phone);case _VerifyOtp() when verifyOtp != null:
-return verifyOtp(_that.phone,_that.code);case _:
+return verifyOtp(_that.phone,_that.code);case _LoadCategories() when loadCategories != null:
+return loadCategories();case _CheckAuthStatus() when checkAuthStatus != null:
+return checkAuthStatus();case _RegisterProviderSubmit() when registerProviderSubmit != null:
+return registerProviderSubmit(_that.phone,_that.ticket,_that.firstName,_that.lastName,_that.serviceCategoryIds,_that.password,_that.passwordConfirmation,_that.selfiePath,_that.idFrontPath,_that.idBackPath);case _:
   return orElse();
 
 }
@@ -180,13 +164,19 @@ return verifyOtp(_that.phone,_that.code);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String phone,  String password)  login,required TResult Function( String phone)  registerStart,required TResult Function( String phone)  forgotPassword,required TResult Function( String phone,  String code)  verifyOtp,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String phone,  String password)  login,required TResult Function( String phone)  registerStart,required TResult Function( String phone)  forgotPassword,required TResult Function( String phone,  String code)  verifyOtp,required TResult Function()  loadCategories,required TResult Function()  checkAuthStatus,required TResult Function( String phone,  String ticket,  String firstName,  String lastName,  List<int> serviceCategoryIds,  String password,  String passwordConfirmation,  String? selfiePath,  String? idFrontPath,  String? idBackPath)  registerProviderSubmit,}) {final _that = this;
 switch (_that) {
 case _Login():
 return login(_that.phone,_that.password);case _RegisterStart():
 return registerStart(_that.phone);case _ForgotPassword():
 return forgotPassword(_that.phone);case _VerifyOtp():
-return verifyOtp(_that.phone,_that.code);}
+return verifyOtp(_that.phone,_that.code);case _LoadCategories():
+return loadCategories();case _CheckAuthStatus():
+return checkAuthStatus();case _RegisterProviderSubmit():
+return registerProviderSubmit(_that.phone,_that.ticket,_that.firstName,_that.lastName,_that.serviceCategoryIds,_that.password,_that.passwordConfirmation,_that.selfiePath,_that.idFrontPath,_that.idBackPath);case _:
+  throw StateError('Unexpected subclass');
+
+}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -200,13 +190,16 @@ return verifyOtp(_that.phone,_that.code);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String phone,  String password)?  login,TResult? Function( String phone)?  registerStart,TResult? Function( String phone)?  forgotPassword,TResult? Function( String phone,  String code)?  verifyOtp,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String phone,  String password)?  login,TResult? Function( String phone)?  registerStart,TResult? Function( String phone)?  forgotPassword,TResult? Function( String phone,  String code)?  verifyOtp,TResult? Function()?  loadCategories,TResult? Function()?  checkAuthStatus,TResult? Function( String phone,  String ticket,  String firstName,  String lastName,  List<int> serviceCategoryIds,  String password,  String passwordConfirmation,  String? selfiePath,  String? idFrontPath,  String? idBackPath)?  registerProviderSubmit,}) {final _that = this;
 switch (_that) {
 case _Login() when login != null:
 return login(_that.phone,_that.password);case _RegisterStart() when registerStart != null:
 return registerStart(_that.phone);case _ForgotPassword() when forgotPassword != null:
 return forgotPassword(_that.phone);case _VerifyOtp() when verifyOtp != null:
-return verifyOtp(_that.phone,_that.code);case _:
+return verifyOtp(_that.phone,_that.code);case _LoadCategories() when loadCategories != null:
+return loadCategories();case _CheckAuthStatus() when checkAuthStatus != null:
+return checkAuthStatus();case _RegisterProviderSubmit() when registerProviderSubmit != null:
+return registerProviderSubmit(_that.phone,_that.ticket,_that.firstName,_that.lastName,_that.serviceCategoryIds,_that.password,_that.passwordConfirmation,_that.selfiePath,_that.idFrontPath,_that.idBackPath);case _:
   return null;
 
 }
@@ -221,12 +214,12 @@ class _Login implements AuthEvent {
   const _Login({required this.phone, required this.password});
   
 
-@override final  String phone;
+ final  String phone;
  final  String password;
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$LoginCopyWith<_Login> get copyWith => __$LoginCopyWithImpl<_Login>(this, _$identity);
 
@@ -252,7 +245,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$LoginCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
   factory _$LoginCopyWith(_Login value, $Res Function(_Login) _then) = __$LoginCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String phone, String password
 });
@@ -271,7 +264,7 @@ class __$LoginCopyWithImpl<$Res>
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phone = null,Object? password = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? phone = null,Object? password = null,}) {
   return _then(_Login(
 phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
@@ -289,11 +282,11 @@ class _RegisterStart implements AuthEvent {
   const _RegisterStart({required this.phone});
   
 
-@override final  String phone;
+ final  String phone;
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$RegisterStartCopyWith<_RegisterStart> get copyWith => __$RegisterStartCopyWithImpl<_RegisterStart>(this, _$identity);
 
@@ -319,7 +312,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$RegisterStartCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
   factory _$RegisterStartCopyWith(_RegisterStart value, $Res Function(_RegisterStart) _then) = __$RegisterStartCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String phone
 });
@@ -338,7 +331,7 @@ class __$RegisterStartCopyWithImpl<$Res>
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phone = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? phone = null,}) {
   return _then(_RegisterStart(
 phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,
@@ -355,11 +348,11 @@ class _ForgotPassword implements AuthEvent {
   const _ForgotPassword({required this.phone});
   
 
-@override final  String phone;
+ final  String phone;
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$ForgotPasswordCopyWith<_ForgotPassword> get copyWith => __$ForgotPasswordCopyWithImpl<_ForgotPassword>(this, _$identity);
 
@@ -385,7 +378,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$ForgotPasswordCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
   factory _$ForgotPasswordCopyWith(_ForgotPassword value, $Res Function(_ForgotPassword) _then) = __$ForgotPasswordCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String phone
 });
@@ -404,7 +397,7 @@ class __$ForgotPasswordCopyWithImpl<$Res>
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phone = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? phone = null,}) {
   return _then(_ForgotPassword(
 phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,
@@ -421,12 +414,12 @@ class _VerifyOtp implements AuthEvent {
   const _VerifyOtp({required this.phone, required this.code});
   
 
-@override final  String phone;
+ final  String phone;
  final  String code;
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
+@JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 _$VerifyOtpCopyWith<_VerifyOtp> get copyWith => __$VerifyOtpCopyWithImpl<_VerifyOtp>(this, _$identity);
 
@@ -452,7 +445,7 @@ String toString() {
 /// @nodoc
 abstract mixin class _$VerifyOtpCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
   factory _$VerifyOtpCopyWith(_VerifyOtp value, $Res Function(_VerifyOtp) _then) = __$VerifyOtpCopyWithImpl;
-@override @useResult
+@useResult
 $Res call({
  String phone, String code
 });
@@ -471,11 +464,165 @@ class __$VerifyOtpCopyWithImpl<$Res>
 
 /// Create a copy of AuthEvent
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? phone = null,Object? code = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? phone = null,Object? code = null,}) {
   return _then(_VerifyOtp(
 phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _LoadCategories implements AuthEvent {
+  const _LoadCategories();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadCategories);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthEvent.loadCategories()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _CheckAuthStatus implements AuthEvent {
+  const _CheckAuthStatus();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CheckAuthStatus);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthEvent.checkAuthStatus()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _RegisterProviderSubmit implements AuthEvent {
+  const _RegisterProviderSubmit({required this.phone, required this.ticket, required this.firstName, required this.lastName, required final  List<int> serviceCategoryIds, required this.password, required this.passwordConfirmation, this.selfiePath, this.idFrontPath, this.idBackPath}): _serviceCategoryIds = serviceCategoryIds;
+  
+
+ final  String phone;
+ final  String ticket;
+ final  String firstName;
+ final  String lastName;
+ final  List<int> _serviceCategoryIds;
+ List<int> get serviceCategoryIds {
+  if (_serviceCategoryIds is EqualUnmodifiableListView) return _serviceCategoryIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_serviceCategoryIds);
+}
+
+ final  String password;
+ final  String passwordConfirmation;
+ final  String? selfiePath;
+ final  String? idFrontPath;
+ final  String? idBackPath;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RegisterProviderSubmitCopyWith<_RegisterProviderSubmit> get copyWith => __$RegisterProviderSubmitCopyWithImpl<_RegisterProviderSubmit>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RegisterProviderSubmit&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.ticket, ticket) || other.ticket == ticket)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&const DeepCollectionEquality().equals(other._serviceCategoryIds, _serviceCategoryIds)&&(identical(other.password, password) || other.password == password)&&(identical(other.passwordConfirmation, passwordConfirmation) || other.passwordConfirmation == passwordConfirmation)&&(identical(other.selfiePath, selfiePath) || other.selfiePath == selfiePath)&&(identical(other.idFrontPath, idFrontPath) || other.idFrontPath == idFrontPath)&&(identical(other.idBackPath, idBackPath) || other.idBackPath == idBackPath));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,phone,ticket,firstName,lastName,const DeepCollectionEquality().hash(_serviceCategoryIds),password,passwordConfirmation,selfiePath,idFrontPath,idBackPath);
+
+@override
+String toString() {
+  return 'AuthEvent.registerProviderSubmit(phone: $phone, ticket: $ticket, firstName: $firstName, lastName: $lastName, serviceCategoryIds: $serviceCategoryIds, password: $password, passwordConfirmation: $passwordConfirmation, selfiePath: $selfiePath, idFrontPath: $idFrontPath, idBackPath: $idBackPath)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RegisterProviderSubmitCopyWith<$Res> implements $AuthEventCopyWith<$Res> {
+  factory _$RegisterProviderSubmitCopyWith(_RegisterProviderSubmit value, $Res Function(_RegisterProviderSubmit) _then) = __$RegisterProviderSubmitCopyWithImpl;
+@useResult
+$Res call({
+ String phone, String ticket, String firstName, String lastName, List<int> serviceCategoryIds, String password, String passwordConfirmation, String? selfiePath, String? idFrontPath, String? idBackPath
+});
+
+
+
+
+}
+/// @nodoc
+class __$RegisterProviderSubmitCopyWithImpl<$Res>
+    implements _$RegisterProviderSubmitCopyWith<$Res> {
+  __$RegisterProviderSubmitCopyWithImpl(this._self, this._then);
+
+  final _RegisterProviderSubmit _self;
+  final $Res Function(_RegisterProviderSubmit) _then;
+
+/// Create a copy of AuthEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? phone = null,Object? ticket = null,Object? firstName = null,Object? lastName = null,Object? serviceCategoryIds = null,Object? password = null,Object? passwordConfirmation = null,Object? selfiePath = freezed,Object? idFrontPath = freezed,Object? idBackPath = freezed,}) {
+  return _then(_RegisterProviderSubmit(
+phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
+as String,ticket: null == ticket ? _self.ticket : ticket // ignore: cast_nullable_to_non_nullable
+as String,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
+as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
+as String,serviceCategoryIds: null == serviceCategoryIds ? _self._serviceCategoryIds : serviceCategoryIds // ignore: cast_nullable_to_non_nullable
+as List<int>,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,passwordConfirmation: null == passwordConfirmation ? _self.passwordConfirmation : passwordConfirmation // ignore: cast_nullable_to_non_nullable
+as String,selfiePath: freezed == selfiePath ? _self.selfiePath : selfiePath // ignore: cast_nullable_to_non_nullable
+as String?,idFrontPath: freezed == idFrontPath ? _self.idFrontPath : idFrontPath // ignore: cast_nullable_to_non_nullable
+as String?,idBackPath: freezed == idBackPath ? _self.idBackPath : idBackPath // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -526,14 +673,16 @@ extension AuthStatePatterns on AuthState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Authenticated value)?  authenticated,TResult Function( _PasswordResetEmailSent value)?  passwordResetEmailSent,TResult Function( _OtpSent value)?  otpSent,TResult Function( _OtpVerified value)?  otpVerified,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Authenticated value)?  authenticated,TResult Function( _PasswordResetEmailSent value)?  passwordResetEmailSent,TResult Function( _CategoriesLoaded value)?  categoriesLoaded,TResult Function( _Unauthenticated value)?  unauthenticated,TResult Function( _OtpSent value)?  otpSent,TResult Function( _OtpVerified value)?  otpVerified,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Authenticated() when authenticated != null:
 return authenticated(_that);case _PasswordResetEmailSent() when passwordResetEmailSent != null:
-return passwordResetEmailSent(_that);case _OtpSent() when otpSent != null:
+return passwordResetEmailSent(_that);case _CategoriesLoaded() when categoriesLoaded != null:
+return categoriesLoaded(_that);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated(_that);case _OtpSent() when otpSent != null:
 return otpSent(_that);case _OtpVerified() when otpVerified != null:
 return otpVerified(_that);case _Error() when error != null:
 return error(_that);case _:
@@ -554,14 +703,16 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _PasswordResetEmailSent value)  passwordResetEmailSent,required TResult Function( _OtpSent value)  otpSent,required TResult Function( _OtpVerified value)  otpVerified,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Authenticated value)  authenticated,required TResult Function( _PasswordResetEmailSent value)  passwordResetEmailSent,required TResult Function( _CategoriesLoaded value)  categoriesLoaded,required TResult Function( _Unauthenticated value)  unauthenticated,required TResult Function( _OtpSent value)  otpSent,required TResult Function( _OtpVerified value)  otpVerified,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Initial():
 return initial(_that);case _Loading():
 return loading(_that);case _Authenticated():
 return authenticated(_that);case _PasswordResetEmailSent():
-return passwordResetEmailSent(_that);case _OtpSent():
+return passwordResetEmailSent(_that);case _CategoriesLoaded():
+return categoriesLoaded(_that);case _Unauthenticated():
+return unauthenticated(_that);case _OtpSent():
 return otpSent(_that);case _OtpVerified():
 return otpVerified(_that);case _Error():
 return error(_that);}
@@ -578,14 +729,16 @@ return error(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _PasswordResetEmailSent value)?  passwordResetEmailSent,TResult? Function( _OtpSent value)?  otpSent,TResult? Function( _OtpVerified value)?  otpVerified,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Authenticated value)?  authenticated,TResult? Function( _PasswordResetEmailSent value)?  passwordResetEmailSent,TResult? Function( _CategoriesLoaded value)?  categoriesLoaded,TResult? Function( _Unauthenticated value)?  unauthenticated,TResult? Function( _OtpSent value)?  otpSent,TResult? Function( _OtpVerified value)?  otpVerified,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial(_that);case _Loading() when loading != null:
 return loading(_that);case _Authenticated() when authenticated != null:
 return authenticated(_that);case _PasswordResetEmailSent() when passwordResetEmailSent != null:
-return passwordResetEmailSent(_that);case _OtpSent() when otpSent != null:
+return passwordResetEmailSent(_that);case _CategoriesLoaded() when categoriesLoaded != null:
+return categoriesLoaded(_that);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated(_that);case _OtpSent() when otpSent != null:
 return otpSent(_that);case _OtpVerified() when otpVerified != null:
 return otpVerified(_that);case _Error() when error != null:
 return error(_that);case _:
@@ -605,13 +758,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( User user)?  authenticated,TResult Function()?  passwordResetEmailSent,TResult Function( String? debugCode)?  otpSent,TResult Function( String ticket)?  otpVerified,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( User user)?  authenticated,TResult Function()?  passwordResetEmailSent,TResult Function( List<CategoryModel> categories)?  categoriesLoaded,TResult Function()?  unauthenticated,TResult Function( String? debugCode)?  otpSent,TResult Function( String ticket)?  otpVerified,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
 return authenticated(_that.user);case _PasswordResetEmailSent() when passwordResetEmailSent != null:
-return passwordResetEmailSent();case _OtpSent() when otpSent != null:
+return passwordResetEmailSent();case _CategoriesLoaded() when categoriesLoaded != null:
+return categoriesLoaded(_that.categories);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _OtpSent() when otpSent != null:
 return otpSent(_that.debugCode);case _OtpVerified() when otpVerified != null:
 return otpVerified(_that.ticket);case _Error() when error != null:
 return error(_that.message);case _:
@@ -632,13 +787,15 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( User user)  authenticated,required TResult Function()  passwordResetEmailSent,required TResult Function( String? debugCode)  otpSent,required TResult Function( String ticket)  otpVerified,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( User user)  authenticated,required TResult Function()  passwordResetEmailSent,required TResult Function( List<CategoryModel> categories)  categoriesLoaded,required TResult Function()  unauthenticated,required TResult Function( String? debugCode)  otpSent,required TResult Function( String ticket)  otpVerified,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Authenticated():
 return authenticated(_that.user);case _PasswordResetEmailSent():
-return passwordResetEmailSent();case _OtpSent():
+return passwordResetEmailSent();case _CategoriesLoaded():
+return categoriesLoaded(_that.categories);case _Unauthenticated():
+return unauthenticated();case _OtpSent():
 return otpSent(_that.debugCode);case _OtpVerified():
 return otpVerified(_that.ticket);case _Error():
 return error(_that.message);}
@@ -655,13 +812,15 @@ return error(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( User user)?  authenticated,TResult? Function()?  passwordResetEmailSent,TResult? Function( String? debugCode)?  otpSent,TResult? Function( String ticket)?  otpVerified,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( User user)?  authenticated,TResult? Function()?  passwordResetEmailSent,TResult? Function( List<CategoryModel> categories)?  categoriesLoaded,TResult? Function()?  unauthenticated,TResult? Function( String? debugCode)?  otpSent,TResult? Function( String ticket)?  otpVerified,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Authenticated() when authenticated != null:
 return authenticated(_that.user);case _PasswordResetEmailSent() when passwordResetEmailSent != null:
-return passwordResetEmailSent();case _OtpSent() when otpSent != null:
+return passwordResetEmailSent();case _CategoriesLoaded() when categoriesLoaded != null:
+return categoriesLoaded(_that.categories);case _Unauthenticated() when unauthenticated != null:
+return unauthenticated();case _OtpSent() when otpSent != null:
 return otpSent(_that.debugCode);case _OtpVerified() when otpVerified != null:
 return otpVerified(_that.ticket);case _Error() when error != null:
 return error(_that.message);case _:
@@ -835,6 +994,110 @@ int get hashCode => runtimeType.hashCode;
 @override
 String toString() {
   return 'AuthState.passwordResetEmailSent()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _CategoriesLoaded implements AuthState {
+  const _CategoriesLoaded(final  List<CategoryModel> categories): _categories = categories;
+  
+
+ final  List<CategoryModel> _categories;
+ List<CategoryModel> get categories {
+  if (_categories is EqualUnmodifiableListView) return _categories;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_categories);
+}
+
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CategoriesLoadedCopyWith<_CategoriesLoaded> get copyWith => __$CategoriesLoadedCopyWithImpl<_CategoriesLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategoriesLoaded&&const DeepCollectionEquality().equals(other._categories, _categories));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories));
+
+@override
+String toString() {
+  return 'AuthState.categoriesLoaded(categories: $categories)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CategoriesLoadedCopyWith<$Res> implements $AuthStateCopyWith<$Res> {
+  factory _$CategoriesLoadedCopyWith(_CategoriesLoaded value, $Res Function(_CategoriesLoaded) _then) = __$CategoriesLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<CategoryModel> categories
+});
+
+
+
+
+}
+/// @nodoc
+class __$CategoriesLoadedCopyWithImpl<$Res>
+    implements _$CategoriesLoadedCopyWith<$Res> {
+  __$CategoriesLoadedCopyWithImpl(this._self, this._then);
+
+  final _CategoriesLoaded _self;
+  final $Res Function(_CategoriesLoaded) _then;
+
+/// Create a copy of AuthState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? categories = null,}) {
+  return _then(_CategoriesLoaded(
+null == categories ? _self._categories : categories // ignore: cast_nullable_to_non_nullable
+as List<CategoryModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Unauthenticated implements AuthState {
+  const _Unauthenticated();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Unauthenticated);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'AuthState.unauthenticated()';
 }
 
 

@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => getIt<AuthBloc>()),
+        BlocProvider(create: (_) => getIt<AuthBloc>()..add(const AuthEvent.checkAuthStatus())),
       ],
       child: MaterialApp.router(
         title: 'Home Maintenance',

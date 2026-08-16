@@ -98,12 +98,13 @@ class _OtpPageState extends State<OtpPage> {
         listener: (context, state) {
           state.maybeWhen(
             otpVerified: (ticket) {
-              // TODO: Navigate to final step. For now, show a SnackBar or navigate to placeholder
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('تم التحقق بنجاح!')),
               );
-              // For demonstration, you could navigate here
-              // context.go('/register/client', extra: ticket);
+              context.go('/register/provider', extra: {
+                'ticket': ticket,
+                'phone': widget.phone,
+              });
             },
             otpSent: (debugCode) {
               ScaffoldMessenger.of(context).showSnackBar(
