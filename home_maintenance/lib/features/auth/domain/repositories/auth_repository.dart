@@ -2,6 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 import '../entities/category_model.dart';
+import '../entities/activation_center.dart';
+import '../../../../core/enums/splash_auth_state.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, User>> login({required String phone, required String password});
@@ -20,5 +22,6 @@ abstract class AuthRepository {
     String? idBackPath,
   });
   Future<Either<Failure, void>> forgotPassword({required String phone});
-  Future<Either<Failure, bool>> checkAuthStatus();
+  Future<Either<Failure, SplashAuthState>> checkAuthStatus();
+  Future<Either<Failure, List<ActivationCenter>>> getActivationCenters();
 }

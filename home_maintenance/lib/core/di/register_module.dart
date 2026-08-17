@@ -25,9 +25,13 @@ abstract class RegisterModule {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           const storage = FlutterSecureStorage();
-          final token = await storage.read(key: 'auth_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+          try {
+            final token = await storage.read(key: 'auth_token');
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          } catch (e) {
+            await storage.deleteAll();
           }
           return handler.next(options);
         },

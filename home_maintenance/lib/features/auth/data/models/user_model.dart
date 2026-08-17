@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../domain/entities/user.dart';
 
 part 'user_model.freezed.dart';
@@ -10,7 +11,7 @@ abstract class UserModel with _$UserModel {
     required int id,
     required String name,
     required String phone,
-    required String role,
+    @JsonKey(unknownEnumValue: UserRole.user) required UserRole role,
     @JsonKey(name: 'profile_image_url') String? profileImageUrl,
     @JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,
     @JsonKey(name: 'created_at') String? createdAt,

@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
+import '../../../../core/enums/user_role.dart';
 
 import '../models/user_model.dart';
+import '../models/activation_center_model.dart';
 import '../../domain/entities/category_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -22,6 +24,9 @@ abstract class AuthRemoteDataSource {
     String? idBackPath,
   });
   Future<bool> hasToken();
+  Future<String?> getUserRole();
+  Future<Map<String, dynamic>> getTechnicianProfile();
+  Future<List<ActivationCenterModel>> getActivationCenters();
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
@@ -44,10 +49,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     if (response.statusCode == 200) {
       final token = response.data['token'];
+      final user = UserModel.fromJson(response.data['user']);
       if (token != null) {
         await _secureStorage.write(key: 'auth_token', value: token);
+        await _secureStorage.write(key: 'auth_role', value: user.role.value);
       }
-      return UserModel.fromJson(response.data['user']);
+      return user;
     } else {
       throw DioException(
         requestOptions: response.requestOptions,
@@ -160,8 +167,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       final token = response.data['token'];
+      final user = UserModel.fromJson(response.data['user']);
       if (token != null) {
         await _secureStorage.write(key: 'auth_token', value: token);
+        await _secureStorage.write(key: 'auth_role', value: user.role.value);
       }
       
       // 2. Set technician services using the new token
@@ -170,7 +179,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         data: {'service_category_ids': serviceCategoryIds},
       );
 
-      return UserModel.fromJson(response.data['user']);
+      return user;
     } else {
       throw DioException(
         requestOptions: response.requestOptions,
@@ -181,7 +190,50 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<bool> hasToken() async {
-    final token = await _secureStorage.read(key: 'auth_token');
-    return token != null && token.isNotEmpty;
+    try {
+      final token = await _secureStorage.read(key: 'auth_token');
+      return token != null && token.isNotEmpty;
+    } catch (e) {
+      await _secureStorage.deleteAll();
+      return false;
+    }
+  }
+
+  @override
+  Future<String?> getUserRole() async {
+    try {
+      return await _secureStorage.read(key: 'auth_role');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getTechnicianProfile() async {
+    final response = await _dio.get('/api/technician/me');
+    if (response.statusCode == 200) {
+      return response.data['data'] as Map<String, dynamic>;
+    } else {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
+  }
+
+  @override
+  Future<List<ActivationCenterModel>> getActivationCenters() async {
+    try {
+      final response = await _dio.get('/api/activation-centers');
+      
+      if (response.statusCode == 200) {
+        final List data = response.data['data'];
+        return data.map((json) => ActivationCenterModel.fromJson(json)).toList();
+      } else {
+        throw Exception(response.data['message'] ?? 'Failed to get activation centers');
+      }
+    } catch (e) {
+      throw Exception('Failed to communicate with server: $e');
+    }
   }
 }

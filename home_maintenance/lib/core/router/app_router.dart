@@ -8,10 +8,16 @@ import '../../core/di/injection.dart';
 import '../../features/auth/presentation/pages/provider_register_wizard_page.dart';
 import '../../features/auth/presentation/bloc/wizard/provider_register_wizard_bloc.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
+import '../../features/auth/presentation/pages/activation_page.dart';
+import '../../features/auth/presentation/pages/splash_page.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashPage(),
+    ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginPage(),
@@ -44,6 +50,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/forgot-password',
       builder: (context, state) => const ForgotPasswordPage(),
+    ),
+    GoRoute(
+      path: '/activation',
+      builder: (context, state) => const ActivationPage(),
     ),
     GoRoute(
       path: '/',

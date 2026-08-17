@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../../core/enums/user_role.dart';
 
 part 'user.freezed.dart';
 
@@ -8,7 +9,7 @@ abstract class User with _$User {
     required int id,
     required String name,
     required String phone,
-    required String role,
+    required UserRole role,
     String? profileImageUrl,
   }) = _User;
 }

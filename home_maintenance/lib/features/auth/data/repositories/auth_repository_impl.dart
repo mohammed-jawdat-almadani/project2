@@ -8,6 +8,11 @@ import '../../domain/entities/category_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 import '../models/user_model.dart';
+import '../models/activation_center_model.dart';
+import '../../domain/entities/activation_center.dart';
+import '../../../../core/enums/splash_auth_state.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/enums/provider_status.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -111,10 +116,39 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> checkAuthStatus() async {
+  Future<Either<Failure, SplashAuthState>> checkAuthStatus() async {
     try {
       final hasToken = await _remoteDataSource.hasToken();
-      return Right(hasToken);
+      if (!hasToken) {
+        return const Right(SplashAuthState.unauthenticated);
+      }
+      
+      final roleString = await _remoteDataSource.getUserRole();
+      final role = UserRoleX.fromValue(roleString);
+      
+      if (role == UserRole.user) {
+        return const Right(SplashAuthState.client);
+      } else {
+        final profile = await _remoteDataSource.getTechnicianProfile();
+        final statusString = profile['status'] as String?;
+        final status = ProviderStatusX.fromValue(statusString);
+        
+        if (status == ProviderStatus.approved) {
+          return const Right(SplashAuthState.providerActive);
+        } else {
+          return const Right(SplashAuthState.providerPending);
+        }
+      }
+    } catch (e) {
+      return const Right(SplashAuthState.unauthenticated);
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ActivationCenter>>> getActivationCenters() async {
+    try {
+      final models = await _remoteDataSource.getActivationCenters();
+      return Right(models.map((e) => e.toEntity()).toList());
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import '../../../../core/enums/splash_auth_state.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../domain/entities/user.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/category_model.dart';
@@ -49,19 +51,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await checkAuthStatusUseCase(NoParams());
     result.fold(
       (failure) => emit(const AuthState.unauthenticated()),
-      (isAuthenticated) {
-        if (isAuthenticated) {
-          // Wait, we don't have the User model, but for now we just want to navigate to home.
-          // Since the authenticated state requires a User object, we either fetch the user, 
-          // or we just emit a different state or fake user. 
-          // A better approach is to change the state or load profile.
-          // For now, let's just emit unauthenticated if not authenticated.
-          // If authenticated, we should probably fetch the user. But since we just need to bypass login,
-          // we can emit a fake user or add a simple authenticatedWithoutUser state.
-          // Actually, let's just pass an empty user for now so it routes correctly.
-          emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: 'user')));
-        } else {
-          emit(const AuthState.unauthenticated());
+      (splashState) {
+        switch (splashState) {
+          case SplashAuthState.unauthenticated:
+            emit(const AuthState.unauthenticated());
+            break;
+          case SplashAuthState.client:
+          case SplashAuthState.providerActive:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.user)));
+            break;
+          case SplashAuthState.providerPending:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.provider)));
+            break;
         }
       },
     );
