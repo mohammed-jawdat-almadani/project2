@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'activation_center.dart';
+part of 'office.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -12,20 +12,20 @@ part of 'activation_center.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$ActivationCenter {
+mixin _$Office {
 
  int get id; String get name; String get address; String get phone;
-/// Create a copy of ActivationCenter
+/// Create a copy of Office
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$ActivationCenterCopyWith<ActivationCenter> get copyWith => _$ActivationCenterCopyWithImpl<ActivationCenter>(this as ActivationCenter, _$identity);
+$OfficeCopyWith<Office> get copyWith => _$OfficeCopyWithImpl<Office>(this as Office, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivationCenter&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.phone, phone) || other.phone == phone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Office&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.phone, phone) || other.phone == phone));
 }
 
 
@@ -34,15 +34,15 @@ int get hashCode => Object.hash(runtimeType,id,name,address,phone);
 
 @override
 String toString() {
-  return 'ActivationCenter(id: $id, name: $name, address: $address, phone: $phone)';
+  return 'Office(id: $id, name: $name, address: $address, phone: $phone)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $ActivationCenterCopyWith<$Res>  {
-  factory $ActivationCenterCopyWith(ActivationCenter value, $Res Function(ActivationCenter) _then) = _$ActivationCenterCopyWithImpl;
+abstract mixin class $OfficeCopyWith<$Res>  {
+  factory $OfficeCopyWith(Office value, $Res Function(Office) _then) = _$OfficeCopyWithImpl;
 @useResult
 $Res call({
  int id, String name, String address, String phone
@@ -53,14 +53,14 @@ $Res call({
 
 }
 /// @nodoc
-class _$ActivationCenterCopyWithImpl<$Res>
-    implements $ActivationCenterCopyWith<$Res> {
-  _$ActivationCenterCopyWithImpl(this._self, this._then);
+class _$OfficeCopyWithImpl<$Res>
+    implements $OfficeCopyWith<$Res> {
+  _$OfficeCopyWithImpl(this._self, this._then);
 
-  final ActivationCenter _self;
-  final $Res Function(ActivationCenter) _then;
+  final Office _self;
+  final $Res Function(Office) _then;
 
-/// Create a copy of ActivationCenter
+/// Create a copy of Office
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? address = null,Object? phone = null,}) {
   return _then(_self.copyWith(
@@ -75,8 +75,8 @@ as String,
 }
 
 
-/// Adds pattern-matching-related methods to [ActivationCenter].
-extension ActivationCenterPatterns on ActivationCenter {
+/// Adds pattern-matching-related methods to [Office].
+extension OfficePatterns on Office {
 /// A variant of `map` that fallback to returning `orElse`.
 ///
 /// It is equivalent to doing:
@@ -89,10 +89,10 @@ extension ActivationCenterPatterns on ActivationCenter {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ActivationCenter value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Office value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _ActivationCenter() when $default != null:
+case _Office() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -111,10 +111,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ActivationCenter value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Office value)  $default,){
 final _that = this;
 switch (_that) {
-case _ActivationCenter():
+case _Office():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -132,10 +132,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ActivationCenter value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Office value)?  $default,){
 final _that = this;
 switch (_that) {
-case _ActivationCenter() when $default != null:
+case _Office() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -155,7 +155,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String phone)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _ActivationCenter() when $default != null:
+case _Office() when $default != null:
 return $default(_that.id,_that.name,_that.address,_that.phone);case _:
   return orElse();
 
@@ -176,7 +176,7 @@ return $default(_that.id,_that.name,_that.address,_that.phone);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String address,  String phone)  $default,) {final _that = this;
 switch (_that) {
-case _ActivationCenter():
+case _Office():
 return $default(_that.id,_that.name,_that.address,_that.phone);case _:
   throw StateError('Unexpected subclass');
 
@@ -196,7 +196,7 @@ return $default(_that.id,_that.name,_that.address,_that.phone);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String address,  String phone)?  $default,) {final _that = this;
 switch (_that) {
-case _ActivationCenter() when $default != null:
+case _Office() when $default != null:
 return $default(_that.id,_that.name,_that.address,_that.phone);case _:
   return null;
 
@@ -208,8 +208,8 @@ return $default(_that.id,_that.name,_that.address,_that.phone);case _:
 /// @nodoc
 
 
-class _ActivationCenter implements ActivationCenter {
-  const _ActivationCenter({required this.id, required this.name, required this.address, required this.phone});
+class _Office implements Office {
+  const _Office({required this.id, required this.name, required this.address, required this.phone});
   
 
 @override final  int id;
@@ -217,17 +217,17 @@ class _ActivationCenter implements ActivationCenter {
 @override final  String address;
 @override final  String phone;
 
-/// Create a copy of ActivationCenter
+/// Create a copy of Office
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ActivationCenterCopyWith<_ActivationCenter> get copyWith => __$ActivationCenterCopyWithImpl<_ActivationCenter>(this, _$identity);
+_$OfficeCopyWith<_Office> get copyWith => __$OfficeCopyWithImpl<_Office>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivationCenter&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.phone, phone) || other.phone == phone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Office&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.address, address) || other.address == address)&&(identical(other.phone, phone) || other.phone == phone));
 }
 
 
@@ -236,15 +236,15 @@ int get hashCode => Object.hash(runtimeType,id,name,address,phone);
 
 @override
 String toString() {
-  return 'ActivationCenter(id: $id, name: $name, address: $address, phone: $phone)';
+  return 'Office(id: $id, name: $name, address: $address, phone: $phone)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ActivationCenterCopyWith<$Res> implements $ActivationCenterCopyWith<$Res> {
-  factory _$ActivationCenterCopyWith(_ActivationCenter value, $Res Function(_ActivationCenter) _then) = __$ActivationCenterCopyWithImpl;
+abstract mixin class _$OfficeCopyWith<$Res> implements $OfficeCopyWith<$Res> {
+  factory _$OfficeCopyWith(_Office value, $Res Function(_Office) _then) = __$OfficeCopyWithImpl;
 @override @useResult
 $Res call({
  int id, String name, String address, String phone
@@ -255,17 +255,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ActivationCenterCopyWithImpl<$Res>
-    implements _$ActivationCenterCopyWith<$Res> {
-  __$ActivationCenterCopyWithImpl(this._self, this._then);
+class __$OfficeCopyWithImpl<$Res>
+    implements _$OfficeCopyWith<$Res> {
+  __$OfficeCopyWithImpl(this._self, this._then);
 
-  final _ActivationCenter _self;
-  final $Res Function(_ActivationCenter) _then;
+  final _Office _self;
+  final $Res Function(_Office) _then;
 
-/// Create a copy of ActivationCenter
+/// Create a copy of Office
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? address = null,Object? phone = null,}) {
-  return _then(_ActivationCenter(
+  return _then(_Office(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,address: null == address ? _self.address : address // ignore: cast_nullable_to_non_nullable

@@ -5,14 +5,13 @@ import 'package:injectable/injectable.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/category_model.dart';
+import '../../domain/entities/office.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
 import '../models/user_model.dart';
-import '../models/activation_center_model.dart';
-import '../../domain/entities/activation_center.dart';
 import '../../../../core/enums/splash_auth_state.dart';
 import '../../../../core/enums/user_role.dart';
-import '../../../../core/enums/provider_status.dart';
+import '../../../../core/enums/technician_status.dart';
 
 @LazySingleton(as: AuthRepository)
 class AuthRepositoryImpl implements AuthRepository {
@@ -24,7 +23,14 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> login({required String phone, required String password}) async {
     try {
       final userModel = await _remoteDataSource.login(phone: phone, password: password);
-      return Right(userModel.toEntity());
+      User user = userModel.toEntity();
+      if (user.role == UserRole.technician) {
+        final profile = await _remoteDataSource.getTechnicianProfile();
+        final statusString = profile['status'] as String?;
+        final status = TechnicianStatusX.fromValue(statusString);
+        user = user.copyWith(technicianStatus: status);
+      }
+      return Right(user);
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         return const Left(ServerFailure('Invalid phone number or password.'));
@@ -98,7 +104,8 @@ class AuthRepositoryImpl implements AuthRepository {
         idFrontPath: idFrontPath,
         idBackPath: idBackPath,
       );
-      return Right(userModel.toEntity());
+      final user = userModel.toEntity().copyWith(technicianStatus: TechnicianStatus.pending);
+      return Right(user);
     } on DioException catch (e) {
       if (e.response?.statusCode == 422) {
         return const Left(ServerFailure('بيانات غير صالحة، يرجى التأكد من الإدخال.'));
@@ -126,15 +133,18 @@ class AuthRepositoryImpl implements AuthRepository {
       final roleString = await _remoteDataSource.getUserRole();
       final role = UserRoleX.fromValue(roleString);
       
-      if (role == UserRole.user) {
+      if (role == UserRole.client) {
         return const Right(SplashAuthState.client);
       } else {
         final profile = await _remoteDataSource.getTechnicianProfile();
         final statusString = profile['status'] as String?;
-        final status = ProviderStatusX.fromValue(statusString);
+        final status = TechnicianStatusX.fromValue(statusString);
         
-        if (status == ProviderStatus.approved) {
+        if (status == TechnicianStatus.active || status == TechnicianStatus.probation) {
           return const Right(SplashAuthState.providerActive);
+        } else if (status == TechnicianStatus.banned) {
+          // You could return SplashAuthState.banned here if you create it
+          return const Right(SplashAuthState.unauthenticated);
         } else {
           return const Right(SplashAuthState.providerPending);
         }
@@ -145,12 +155,14 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, List<ActivationCenter>>> getActivationCenters() async {
+  Future<Either<Failure, List<Office>>> getOffices() async {
     try {
-      final models = await _remoteDataSource.getActivationCenters();
+      final models = await _remoteDataSource.getOffices();
       return Right(models.map((e) => e.toEntity()).toList());
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.response?.data['message'] ?? 'حدث خطأ أثناء جلب قائمة المكاتب'));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure('حدث خطأ غير متوقع'));
     }
   }
 }

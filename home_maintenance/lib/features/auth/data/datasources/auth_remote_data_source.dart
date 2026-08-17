@@ -4,7 +4,7 @@ import 'package:injectable/injectable.dart';
 import '../../../../core/enums/user_role.dart';
 
 import '../models/user_model.dart';
-import '../models/activation_center_model.dart';
+import '../models/office_model.dart';
 import '../../domain/entities/category_model.dart';
 
 abstract class AuthRemoteDataSource {
@@ -26,7 +26,7 @@ abstract class AuthRemoteDataSource {
   Future<bool> hasToken();
   Future<String?> getUserRole();
   Future<Map<String, dynamic>> getTechnicianProfile();
-  Future<List<ActivationCenterModel>> getActivationCenters();
+  Future<List<OfficeModel>> getOffices();
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
@@ -222,18 +222,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<List<ActivationCenterModel>> getActivationCenters() async {
-    try {
-      final response = await _dio.get('/api/activation-centers');
-      
-      if (response.statusCode == 200) {
-        final List data = response.data['data'];
-        return data.map((json) => ActivationCenterModel.fromJson(json)).toList();
-      } else {
-        throw Exception(response.data['message'] ?? 'Failed to get activation centers');
-      }
-    } catch (e) {
-      throw Exception('Failed to communicate with server: $e');
+  Future<List<OfficeModel>> getOffices() async {
+    final response = await _dio.get('/api/offices');
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data['data'] as List<dynamic>;
+      return data.map((json) => OfficeModel.fromJson(json as Map<String, dynamic>)).toList();
+    } else {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
     }
   }
 }

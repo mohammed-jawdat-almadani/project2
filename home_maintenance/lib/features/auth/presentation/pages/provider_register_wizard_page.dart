@@ -11,6 +11,8 @@ import '../bloc/wizard/provider_register_wizard_bloc.dart';
 import '../widgets/primary_auth_button.dart';
 import '../models/password_input.dart';
 import '../models/confirm_password_input.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/enums/technician_status.dart';
 
 class ProviderRegisterWizardPage extends StatefulWidget {
   final String ticket;
@@ -86,7 +88,13 @@ class _ProviderRegisterWizardPageState extends State<ProviderRegisterWizardPage>
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, authState) {
             authState.maybeWhen(
-              authenticated: (user) => context.go('/'),
+              authenticated: (user) {
+                if (user.role == UserRole.technician && user.technicianStatus != TechnicianStatus.active) {
+                  context.go('/activation');
+                } else {
+                  context.go('/');
+                }
+              },
               error: (msg) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg))),
               orElse: () {},
             );

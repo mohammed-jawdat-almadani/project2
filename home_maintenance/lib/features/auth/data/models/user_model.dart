@@ -11,7 +11,7 @@ abstract class UserModel with _$UserModel {
     required int id,
     required String name,
     required String phone,
-    @JsonKey(unknownEnumValue: UserRole.user) required UserRole role,
+    @JsonKey(unknownEnumValue: UserRole.client) required UserRole role,
     @JsonKey(name: 'profile_image_url') String? profileImageUrl,
     @JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,
     @JsonKey(name: 'created_at') String? createdAt,

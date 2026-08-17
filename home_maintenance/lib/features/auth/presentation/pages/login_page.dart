@@ -9,6 +9,8 @@ import '../widgets/auth_text_field.dart';
 import '../widgets/primary_auth_button.dart';
 import '../models/phone_input.dart';
 import '../models/password_input.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/enums/technician_status.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -40,7 +42,11 @@ class _LoginPageViewState extends State<_LoginPageView> {
             listener: (context, state) {
               state.maybeWhen(
                 authenticated: (user) {
-                  context.go('/');
+                  if (user.role == UserRole.technician && user.technicianStatus != TechnicianStatus.active) {
+                    context.go('/activation');
+                  } else {
+                    context.go('/');
+                  }
                 },
                 error: (msg) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));

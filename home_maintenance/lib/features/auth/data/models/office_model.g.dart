@@ -1,25 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'activation_center_model.dart';
+part of 'office_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_ActivationCenterModel _$ActivationCenterModelFromJson(
-  Map<String, dynamic> json,
-) => _ActivationCenterModel(
+_OfficeModel _$OfficeModelFromJson(Map<String, dynamic> json) => _OfficeModel(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
   address: json['address'] as String,
   phone: json['phone'] as String,
 );
 
-Map<String, dynamic> _$ActivationCenterModelToJson(
-  _ActivationCenterModel instance,
-) => <String, dynamic>{
-  'id': instance.id,
-  'name': instance.name,
-  'address': instance.address,
-  'phone': instance.phone,
-};
+Map<String, dynamic> _$OfficeModelToJson(_OfficeModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'address': instance.address,
+      'phone': instance.phone,
+    };

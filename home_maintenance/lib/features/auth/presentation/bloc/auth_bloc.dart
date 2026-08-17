@@ -10,6 +10,7 @@ import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/send_register_otp_usecase.dart';
 import '../../domain/usecases/verify_register_otp_usecase.dart';
 import '../../domain/usecases/register_provider_usecase.dart';
+import '../../../../core/enums/technician_status.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../domain/usecases/check_auth_status_usecase.dart';
@@ -57,11 +58,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             emit(const AuthState.unauthenticated());
             break;
           case SplashAuthState.client:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.client)));
+            break;
           case SplashAuthState.providerActive:
-            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.user)));
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.active)));
             break;
           case SplashAuthState.providerPending:
-            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.provider)));
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.pending)));
             break;
         }
       },
