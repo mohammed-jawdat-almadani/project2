@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
-import '../bloc/auth_bloc.dart';
-import '../../../../core/enums/user_role.dart';
 import '../../../../core/enums/technician_status.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../bloc/auth_bloc.dart';
 import '../cubit/activation_offices_cubit.dart';
 import '../cubit/activation_offices_state.dart';
 import '../widgets/office_card.dart';
@@ -35,10 +37,10 @@ class ActivationPage extends StatelessWidget {
           ),
         ],
         child: Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: AppColors.background(context),
           body: SafeArea(
             child: RefreshIndicator(
-              color: const Color(0xFF003882),
+              color: AppColors.primary(context),
               onRefresh: () async {
                 context.read<AuthBloc>().add(const AuthEvent.checkAuthStatus());
                 await context.read<ActivationOfficesCubit>().loadOffices();
@@ -53,27 +55,29 @@ class ActivationPage extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(20.0, 36.0, 20.0, 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
-                            'تفعيل الحساب',
+                            context.isArabic ? 'تفعيل الحساب' : 'Account Activation',
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF003882),
+                              color: AppColors.primary(context),
                               letterSpacing: -0.5,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: Text(
-                              'يرجى زيارة أحد مراكزنا المعتمدة أدناه لتفعيل حسابك وإكمال عملية التسجيل.',
+                              context.isArabic
+                                  ? 'يرجى زيارة أحد مراكزنا المعتمدة أدناه لتفعيل حسابك وإكمال عملية التسجيل.'
+                                  : 'Please visit one of our approved centers below to activate your account and complete registration.',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 14,
                                 height: 1.6,
-                                color: Color(0xFF64748B),
+                                color: AppColors.textSecondary(context),
                                 fontWeight: FontWeight.w400,
                               ),
                             ),
@@ -90,12 +94,12 @@ class ActivationPage extends StatelessWidget {
                           initial: () => const SliverToBoxAdapter(
                             child: SizedBox(height: 200),
                           ),
-                          loading: () => const SliverToBoxAdapter(
+                          loading: () => SliverToBoxAdapter(
                             child: Padding(
-                              padding: EdgeInsets.only(top: 80.0),
+                              padding: const EdgeInsets.only(top: 80.0),
                               child: Center(
                                 child: CircularProgressIndicator(
-                                  color: Color(0xFF003882),
+                                  color: AppColors.primary(context),
                                 ),
                               ),
                             ),
@@ -126,9 +130,9 @@ class ActivationPage extends StatelessWidget {
                                         context.read<ActivationOfficesCubit>().loadOffices();
                                       },
                                       icon: const Icon(Icons.refresh),
-                                      label: const Text('إعادة المحاولة'),
+                                      label: Text(context.tr('retry')),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF003882),
+                                        backgroundColor: AppColors.primary(context),
                                         foregroundColor: Colors.white,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(12),
@@ -142,15 +146,15 @@ class ActivationPage extends StatelessWidget {
                           ),
                           loaded: (offices) {
                             if (offices.isEmpty) {
-                              return const SliverToBoxAdapter(
+                              return SliverToBoxAdapter(
                                 child: Padding(
-                                  padding: EdgeInsets.only(top: 60.0),
+                                  padding: const EdgeInsets.only(top: 60.0),
                                   child: Center(
                                     child: Text(
-                                      'لا توجد مكاتب متاحة حالياً',
+                                      context.isArabic ? 'لا توجد مكاتب متاحة حالياً' : 'No offices currently available',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Color(0xFF64748B),
+                                        color: AppColors.textSecondary(context),
                                       ),
                                     ),
                                   ),

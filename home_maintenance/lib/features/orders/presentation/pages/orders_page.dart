@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/orders_bloc.dart';
 import '../bloc/orders_event.dart';
 import '../bloc/orders_state.dart';
@@ -24,26 +26,26 @@ class _OrdersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        title: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.0),
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Text(
-            'طلباتي',
+            context.tr('tab_orders'),
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              color: AppColors.textPrimary(context),
             ),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF003882)),
+            icon: Icon(Icons.refresh_rounded, color: AppColors.primary(context)),
             onPressed: () {
               context.read<OrdersBloc>().add(const OrdersEvent.refresh());
             },
@@ -72,8 +74,8 @@ class _OrdersView extends StatelessWidget {
               // Orders List
               Expanded(
                 child: state.isLoading && state.orders.isEmpty
-                    ? const Center(
-                        child: CircularProgressIndicator(color: Color(0xFF003882)),
+                    ? Center(
+                        child: CircularProgressIndicator(color: AppColors.primary(context)),
                       )
                     : RefreshIndicator(
                         color: const Color(0xFF003882),
@@ -103,14 +105,14 @@ class _OrdersView extends StatelessWidget {
     final current = state.currentFilter;
 
     final filters = [
-      {'label': 'الكل', 'value': null},
-      {'label': 'المقبولة 🟢', 'value': 'accepted'},
-      {'label': 'المعلقة ⏳', 'value': 'pending'},
-      {'label': 'المنتهية ⚪', 'value': 'expired'},
+      {'label': context.isArabic ? 'الكل' : 'All', 'value': null},
+      {'label': context.isArabic ? 'المقبولة 🟢' : 'Active 🟢', 'value': 'accepted'},
+      {'label': context.isArabic ? 'المعلقة ⏳' : 'Pending ⏳', 'value': 'pending'},
+      {'label': context.isArabic ? 'المنتهية ⚪' : 'Completed ⚪', 'value': 'expired'},
     ];
 
     return Container(
-      color: Colors.white,
+      color: AppColors.surface(context),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -121,24 +123,27 @@ class _OrdersView extends StatelessWidget {
             final isSelected = current == val;
 
             return Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: EdgeInsets.only(
+                right: context.isRtl ? 0 : 8.0,
+                left: context.isRtl ? 8.0 : 0,
+              ),
               child: FilterChip(
                 label: Text(
                   f['label']!,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? Colors.white : const Color(0xFF475569),
+                    color: isSelected ? Colors.white : AppColors.textSecondary(context),
                   ),
                 ),
                 selected: isSelected,
                 selectedColor: const Color(0xFF003882),
-                backgroundColor: const Color(0xFFF1F5F9),
+                backgroundColor: AppColors.inputFill(context),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
                 side: BorderSide(
-                  color: isSelected ? const Color(0xFF003882) : const Color(0xFFE2E8F0),
+                  color: isSelected ? const Color(0xFF003882) : AppColors.border(context),
                 ),
                 showCheckmark: false,
                 onSelected: (_) {
@@ -153,6 +158,8 @@ class _OrdersView extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Center(
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -163,30 +170,32 @@ class _OrdersView extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(24),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFEEF2FF),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.assignment_outlined,
                   size: 48,
-                  color: Color(0xFF003882),
+                  color: AppColors.primary(context),
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'لا توجد طلبات هنا حالياً',
+              Text(
+                context.isArabic ? 'لا توجد طلبات هنا حالياً' : 'No orders found',
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'عند استلام أو قبول طلبات صيانة جديدة ستظهر في هذه القائمة مباشرة',
+              Text(
+                context.isArabic
+                    ? 'عند استلام أو قبول طلبات صيانة جديدة ستظهر في هذه القائمة مباشرة'
+                    : 'New service requests and accepted jobs will appear here',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: Color(0xFF64748B), height: 1.4),
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context), height: 1.4),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -194,7 +203,7 @@ class _OrdersView extends StatelessWidget {
                   context.read<OrdersBloc>().add(const OrdersEvent.refresh());
                 },
                 icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('تحديث القائمة'),
+                label: Text(context.tr('retry')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF003882),
                   foregroundColor: Colors.white,

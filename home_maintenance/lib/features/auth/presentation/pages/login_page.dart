@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:formz/formz.dart';
+import '../../../../core/enums/technician_status.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/login/login_bloc.dart';
+import '../models/password_input.dart';
+import '../models/phone_input.dart';
 import '../widgets/auth_text_field.dart';
 import '../widgets/primary_auth_button.dart';
-import '../models/phone_input.dart';
-import '../models/password_input.dart';
-import '../../../../core/enums/user_role.dart';
-import '../../../../core/enums/technician_status.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -34,8 +36,10 @@ class _LoginPageView extends StatefulWidget {
 class _LoginPageViewState extends State<_LoginPageView> {
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFBFDF9),
+      backgroundColor: AppColors.background(context),
       body: MultiBlocListener(
         listeners: [
           BlocListener<AuthBloc, AuthState>(
@@ -72,7 +76,7 @@ class _LoginPageViewState extends State<_LoginPageView> {
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, authState) {
             final isLoading = authState.maybeWhen(loading: () => true, orElse: () => false);
-            
+
             return Stack(
               children: [
                 // Header Gradient
@@ -123,9 +127,9 @@ class _LoginPageViewState extends State<_LoginPageView> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Text(
-                          'أهلاً بك مجدداً',
-                          style: TextStyle(
+                        Text(
+                          context.tr('welcome_back'),
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 32,
                             fontWeight: FontWeight.w700,
@@ -146,16 +150,16 @@ class _LoginPageViewState extends State<_LoginPageView> {
                         width: double.infinity,
                         padding: const EdgeInsets.all(24),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppColors.surface(context),
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
+                              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.08),
+                              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                               blurRadius: 40,
                               offset: const Offset(0, 10),
                             ),
@@ -166,10 +170,10 @@ class _LoginPageViewState extends State<_LoginPageView> {
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
-                                  'تسجيل الدخول',
+                                Text(
+                                  context.tr('login'),
                                   style: TextStyle(
-                                    color: Color(0xFF1A1B22),
+                                    color: AppColors.textPrimary(context),
                                     fontSize: 24,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -177,32 +181,32 @@ class _LoginPageViewState extends State<_LoginPageView> {
                                 const SizedBox(height: 32),
                                 AuthTextField(
                                   label: '',
-                                  hint: 'رقم الهاتف',
+                                  hint: context.tr('phone_number'),
                                   isPhone: true,
                                   onChanged: (val) => context.read<LoginBloc>().add(LoginEvent.phoneChanged(val)),
-                                  errorText: state.showErrors && state.phone.isNotValid 
-                                      ? (state.phone.error == PhoneValidationError.empty 
-                                          ? 'رقم الهاتف مطلوب' 
-                                          : 'رقم الهاتف يجب أن يتكون من 9 أرقام ويبدأ بـ 9')
+                                  errorText: state.showErrors && state.phone.isNotValid
+                                      ? (state.phone.error == PhoneValidationError.empty
+                                          ? (context.isArabic ? 'رقم الهاتف مطلوب' : 'Phone is required')
+                                          : (context.isArabic ? 'رقم الهاتف يجب أن يتكون من 9 أرقام ويبدأ بـ 9' : 'Phone must be 9 digits starting with 9'))
                                       : null,
                                 ),
                                 const SizedBox(height: 24),
                                 AuthTextField(
-                                  label: 'كلمة المرور',
+                                  label: context.tr('password'),
                                   hint: '••••••••',
                                   isPassword: true,
                                   onChanged: (val) => context.read<LoginBloc>().add(LoginEvent.passwordChanged(val)),
-                                  errorText: state.showErrors && state.password.isNotValid 
-                                      ? (state.password.error == PasswordValidationError.empty 
-                                          ? 'كلمة المرور مطلوبة' 
-                                          : state.password.error == PasswordValidationError.tooShort 
-                                              ? 'كلمة المرور قصيرة جداً (8 أحرف على الأقل)' 
-                                              : 'كلمة المرور يجب أن تحتوي على حروف، أرقام، ورموز')
+                                  errorText: state.showErrors && state.password.isNotValid
+                                      ? (state.password.error == PasswordValidationError.empty
+                                          ? (context.isArabic ? 'كلمة المرور مطلوبة' : 'Password is required')
+                                          : state.password.error == PasswordValidationError.tooShort
+                                              ? (context.isArabic ? 'كلمة المرور قصيرة جداً (8 أحرف على الأقل)' : 'Password too short (min 8)')
+                                              : (context.isArabic ? 'كلمة المرور يجب أن تحتوي على حروف، أرقام، ورموز' : 'Password must contain letters and numbers'))
                                       : null,
                                 ),
                                 const SizedBox(height: 8),
                                 Align(
-                                  alignment: Alignment.centerLeft,
+                                  alignment: context.isRtl ? Alignment.centerLeft : Alignment.centerRight,
                                   child: TextButton(
                                     onPressed: () {
                                       context.push('/forgot-password');
@@ -212,10 +216,10 @@ class _LoginPageViewState extends State<_LoginPageView> {
                                       minimumSize: const Size(0, 0),
                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     ),
-                                    child: const Text(
-                                      'نسيت كلمة المرور؟',
+                                    child: Text(
+                                      context.isArabic ? 'نسيت كلمة المرور؟' : 'Forgot Password?',
                                       style: TextStyle(
-                                        color: Color(0xFF0056D2),
+                                        color: AppColors.primary(context),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -224,17 +228,17 @@ class _LoginPageViewState extends State<_LoginPageView> {
                                 ),
                                 const SizedBox(height: 32),
                                 PrimaryAuthButton(
-                                  text: 'دخول',
+                                  text: context.tr('login'),
                                   isLoading: isLoading,
                                   backgroundColor: const Color(0xFF0056D2),
-                                  icon: Icons.arrow_back,
+                                  icon: context.isRtl ? Icons.arrow_back : Icons.arrow_forward,
                                   onPressed: () {
                                     context.read<LoginBloc>().add(const LoginEvent.submit());
                                   },
                                 ),
                               ],
                             );
-                          }
+                          },
                         ),
                       ),
                       const SizedBox(height: 32),
@@ -242,10 +246,10 @@ class _LoginPageViewState extends State<_LoginPageView> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text(
-                            'ليس لديك حساب؟',
+                          Text(
+                            context.isArabic ? 'ليس لديك حساب؟' : "Don't have an account?",
                             style: TextStyle(
-                              color: Color(0xFF747784),
+                              color: AppColors.textSecondary(context),
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
                             ),
@@ -255,10 +259,10 @@ class _LoginPageViewState extends State<_LoginPageView> {
                             onTap: () {
                               context.push('/register');
                             },
-                            child: const Text(
-                              'إنشاء حساب جديد',
+                            child: Text(
+                              context.isArabic ? 'إنشاء حساب جديد' : 'Register Now',
                               style: TextStyle(
-                                color: Color(0xFF0056D2),
+                                color: AppColors.primary(context),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),

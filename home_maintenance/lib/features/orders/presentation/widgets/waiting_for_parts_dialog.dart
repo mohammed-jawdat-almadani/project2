@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class WaitingForPartsDialog extends StatefulWidget {
   final int orderId;
@@ -16,7 +18,13 @@ class WaitingForPartsDialog extends StatefulWidget {
 
 class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _noteController = TextEditingController(text: 'بانتظار تأمين قطعة الغيار من المورد (~2 يوم)');
+  final _noteController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _noteController.text = 'بانتظار تأمين قطعة الغيار من المورد (~2 يوم)';
+  }
 
   @override
   void dispose() {
@@ -33,9 +41,11 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface(context),
       child: Padding(
         padding: const EdgeInsets.all(22.0),
         child: Form(
@@ -49,8 +59,8 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFEF3C7),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -60,12 +70,12 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Text(
-                    'طلب انتظار قطعة غيار',
+                  Text(
+                    context.tr('waiting_for_parts_title'),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                 ],
@@ -77,19 +87,23 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFEFF6FF),
+                  color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEFF6FF),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFBFDBFE)),
+                  border: Border.all(color: isDark ? const Color(0xFF2563EB) : const Color(0xFFBFDBFE)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline_rounded, color: Color(0xFF2563EB), size: 20),
-                    SizedBox(width: 8),
+                    const Icon(Icons.info_outline_rounded, color: Color(0xFF38BDF8), size: 20),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'عند طلب الانتظار، تُمنح مهلة 72 ساعة لتأمين القطعة. يمكنك استلام وتنفيذ طلبات صيانة أخرى في هذه الأثناء بكل حرية 🕒✨',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF1E40AF), height: 1.4),
+                        context.tr('waiting_for_parts_desc'),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? const Color(0xFFBAE6FD) : const Color(0xFF1E40AF),
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
@@ -99,24 +113,25 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
               const SizedBox(height: 14),
 
               // Note Field
-              const Text(
-                'ملاحظات / اسم القطعة المطلوبة:',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF334155)),
+              Text(
+                '${context.tr('notes')}:',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _noteController,
                 maxLines: 2,
+                style: TextStyle(color: AppColors.textPrimary(context)),
                 decoration: InputDecoration(
-                  hintText: 'مثال: بانتظار ضاغط التبريد من المورد...',
+                  hintText: context.tr('notes'),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: AppColors.inputFill(context),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border(context))),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: AppColors.border(context))),
                 ),
                 validator: (val) {
-                  if (val == null || val.trim().isEmpty) return 'يرجى إدخال ملاحظة توضيحية';
+                  if (val == null || val.trim().isEmpty) return context.tr('required_field');
                   return null;
                 },
               ),
@@ -130,10 +145,12 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary(context),
+                        side: BorderSide(color: AppColors.border(context)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('إلغاء', style: TextStyle(color: Color(0xFF64748B))),
+                      child: Text(context.tr('cancel')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -146,7 +163,7 @@ class _WaitingForPartsDialogState extends State<WaitingForPartsDialog> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('تأكيد الانتظار'),
+                      child: Text(context.tr('confirm')),
                     ),
                   ),
                 ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../orders/domain/entities/quote_part.dart';
 import '../../../orders/presentation/widgets/closure_request_sheet.dart';
 import '../../../orders/presentation/widgets/closure_verification_dialog.dart';
@@ -26,28 +28,29 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        backgroundColor: AppColors.surface(context),
+        title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded, color: Color(0xFFDC2626), size: 28),
-            SizedBox(width: 8),
+            const Icon(Icons.warning_amber_rounded, color: Color(0xFFDC2626), size: 28),
+            const SizedBox(width: 8),
             Text(
-              'الانسحاب من الطلب',
+              context.tr('withdraw_confirm_title'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
+                color: AppColors.textPrimary(context),
               ),
             ),
           ],
         ),
-        content: const Text(
-          'هل أنت متأكد من رغبتك في الانسحاب من هذا الطلب؟ سيتم إلغاء تعيينك وإعادة إتاحة الطلب لفنيين آخرين.',
-          style: TextStyle(fontSize: 13, color: Color(0xFF475569), height: 1.4),
+        content: Text(
+          context.tr('withdraw_confirm_desc'),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context), height: 1.4),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text(context.tr('cancel'), style: TextStyle(color: AppColors.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -59,7 +62,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text('تأكيد الانسحاب'),
+            child: Text(context.tr('confirm')),
           ),
         ],
       ),
@@ -80,24 +83,27 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           required int warrantyDays,
           required List<QuotePart> parts,
         }) {
-          if (isAddon) {
-            context.read<HomeBloc>().add(
-                  HomeEvent.sendAddonQuote(
-                    orderId: orderId,
-                    laborCost: laborCost,
-                    parts: parts,
-                  ),
-                );
-          } else {
-            context.read<HomeBloc>().add(
-                  HomeEvent.sendQuote(
-                    orderId: orderId,
-                    laborCost: laborCost,
-                    warrantyDays: warrantyDays,
-                    parts: parts,
-                  ),
-                );
-          }
+          context.read<HomeBloc>().add(
+                HomeEvent.sendQuote(
+                  orderId: orderId,
+                  laborCost: laborCost,
+                  warrantyDays: warrantyDays,
+                  parts: parts,
+                ),
+              );
+        },
+        onSendAddonQuote: ({
+          required int orderId,
+          required String laborCost,
+          required List<QuotePart> parts,
+        }) {
+          context.read<HomeBloc>().add(
+                HomeEvent.sendAddonQuote(
+                  orderId: orderId,
+                  laborCost: laborCost,
+                  parts: parts,
+                ),
+              );
         },
       ),
     );
@@ -110,7 +116,10 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
         orderId: order.orderId,
         onConfirm: (orderId, note) {
           context.read<HomeBloc>().add(
-                HomeEvent.requestWaitingForParts(orderId: orderId, note: note),
+                HomeEvent.requestWaitingForParts(
+                  orderId: orderId,
+                  note: note,
+                ),
               );
         },
       ),
@@ -124,9 +133,12 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => ClosureRequestSheet(
         orderId: order.orderId,
-        onSubmit: (orderId, photos) {
+        onSubmitPhotos: (orderId, photos) {
           context.read<HomeBloc>().add(
-                HomeEvent.requestClosure(orderId: orderId, photos: photos),
+                HomeEvent.requestClosure(
+                  orderId: orderId,
+                  photos: photos,
+                ),
               );
         },
       ),
@@ -140,7 +152,10 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
         orderId: order.orderId,
         onVerify: (orderId, code) {
           context.read<HomeBloc>().add(
-                HomeEvent.verifyClosure(orderId: orderId, code: code),
+                HomeEvent.verifyClosure(
+                  orderId: orderId,
+                  code: code,
+                ),
               );
         },
       ),
@@ -162,11 +177,12 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
     final isClosurePending = status == 'closure_pending';
     final isDisputed = status == 'disputed';
     final isBeforeArrival = !isActuallyArrived && (status == 'accepted' || status == 'offered');
+    final isDark = AppColors.isDark(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(24.0),
         border: Border.all(
           color: isDisputed
@@ -175,12 +191,12 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
                   ? const Color(0xFFFDE68A)
                   : (isArrived || isInProgress || isClosurePending
                       ? const Color(0xFF86EFAC)
-                      : const Color(0xFF93C5FD))),
+                      : (isDark ? const Color(0xFF1E40AF) : const Color(0xFF93C5FD)))),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF003882).withValues(alpha: 0.14),
+            color: Colors.black.withValues(alpha: isDark ? 0.35 : 0.14),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -199,19 +215,19 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildStatusHeader(status),
+                  _buildStatusHeader(context, status),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFEEF2FF),
+                      color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      'طلب #${order.orderId}',
-                      style: const TextStyle(
+                      '${context.tr('order_no')}${order.orderId}',
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF003882),
+                        color: AppColors.primary(context),
                       ),
                     ),
                   ),
@@ -227,13 +243,13 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF1F5F9),
+                      color: AppColors.inputFill(context),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.handyman_rounded,
                       size: 22,
-                      color: Color(0xFF003882),
+                      color: AppColors.primary(context),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -243,18 +259,18 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
                       children: [
                         Text(
                           order.serviceName,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.textPrimary(context),
                           ),
                         ),
                         const SizedBox(height: 3),
                         Text(
-                          'العميل: ${order.clientName}',
-                          style: const TextStyle(
+                          '${context.tr('client')}: ${order.clientName}',
+                          style: TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF475569),
+                            color: AppColors.textSecondary(context),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -262,14 +278,14 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Row(
                             children: [
-                              const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF94A3B8)),
+                              Icon(Icons.location_on_outlined, size: 14, color: AppColors.textMuted(context)),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   order.clientAddress,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF64748B),
+                                    color: AppColors.textSecondary(context),
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -291,7 +307,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               ],
 
               const SizedBox(height: 14),
-              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              Divider(height: 1, color: AppColors.border(context)),
               const SizedBox(height: 12),
 
               // Dynamic Action Controls based on State
@@ -318,46 +334,47 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusHeader(String status) {
-    String label = 'طلب مقبول / قيد التوجه للعميل';
-    Color iconColor = const Color(0xFF003882);
-    Color bgColor = const Color(0xFFEEF2FF);
+  Widget _buildStatusHeader(BuildContext context, String status) {
+    final isDark = AppColors.isDark(context);
+    String label = context.tr('order_accepted_header');
+    Color iconColor = isDark ? const Color(0xFF38BDF8) : const Color(0xFF003882);
+    Color bgColor = isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
     IconData icon = Icons.directions_car_rounded;
 
     if (status == 'arrived') {
-      label = 'تم الوصول إلى الموقع 📍';
+      label = context.tr('arrived_header');
       iconColor = const Color(0xFF16A34A);
-      bgColor = const Color(0xFFDCFCE7);
+      bgColor = isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       icon = Icons.location_on_rounded;
     } else if (status == 'quote_pending') {
-      label = 'بانتظار موافقة العميل على العرض ⏳';
+      label = context.tr('quote_pending_header');
       iconColor = const Color(0xFFD97706);
-      bgColor = const Color(0xFFFEF3C7);
+      bgColor = isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       icon = Icons.hourglass_empty_rounded;
     } else if (status == 'quote_rejected' || status == 'rejected') {
-      label = 'رفض العميل عرض السعر ⚠️';
+      label = context.tr('quote_rejected_header');
       iconColor = const Color(0xFFD97706);
-      bgColor = const Color(0xFFFEF3C7);
+      bgColor = isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       icon = Icons.cancel_outlined;
     } else if (status == 'in_progress' || status == 'repairing') {
-      label = 'قيد تنفيذ الصيانة 🛠️';
-      iconColor = const Color(0xFF003882);
-      bgColor = const Color(0xFFEEF2FF);
+      label = context.tr('in_progress_header');
+      iconColor = isDark ? const Color(0xFF38BDF8) : const Color(0xFF003882);
+      bgColor = isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
       icon = Icons.build_circle_rounded;
     } else if (status == 'parts_waiting') {
-      label = 'بانتظار قطعة غيار (مهلة 72 ساعة) ⏳';
+      label = context.tr('parts_waiting_header');
       iconColor = const Color(0xFFD97706);
-      bgColor = const Color(0xFFFEF3C7);
+      bgColor = isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       icon = Icons.hourglass_top_rounded;
     } else if (status == 'closure_pending') {
-      label = 'بانتظار كود الإغلاق من العميل 🔐';
+      label = context.tr('closure_pending_header');
       iconColor = const Color(0xFF16A34A);
-      bgColor = const Color(0xFFDCFCE7);
+      bgColor = isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       icon = Icons.lock_open_rounded;
     } else if (status == 'disputed') {
-      label = 'اعتراض قيد المراجعة 🛡️';
+      label = context.tr('dispute_header');
       iconColor = const Color(0xFFDC2626);
-      bgColor = const Color(0xFFFEE2E2);
+      bgColor = isDark ? const Color(0xFF7F1D1D).withValues(alpha: 0.3) : const Color(0xFFFEE2E2);
       icon = Icons.shield_outlined;
     }
 
@@ -392,7 +409,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               context.read<HomeBloc>().add(HomeEvent.arriveOrder(order.orderId));
             },
             icon: const Icon(Icons.location_on_rounded, size: 18),
-            label: const Text('تم الوصول إلى الموقع 📍', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('arrive_at_location'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF16A34A),
               foregroundColor: Colors.white,
@@ -411,7 +428,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => _showWithdrawConfirmation(context),
                 icon: const Icon(Icons.logout_rounded, size: 16, color: Color(0xFFDC2626)),
-                label: const Text('انسحاب', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
+                label: Text(context.tr('withdraw_order'), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFDC2626))),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   side: const BorderSide(color: Color(0xFFFCA5A5)),
@@ -421,7 +438,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
             ),
             if (onLocateClient != null) ...[
               const SizedBox(width: 8),
-              _buildMapButton(),
+              _buildMapButton(context),
             ],
           ],
         ),
@@ -438,7 +455,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => _openSendQuoteSheet(context, isAddon: false),
             icon: const Icon(Icons.request_quote_rounded, size: 18),
-            label: const Text('إرسال عرض السعر للعميل 📋', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('send_quote_btn'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF003882),
               foregroundColor: Colors.white,
@@ -456,23 +473,28 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
 
   // 3. Quote Pending Actions: Chat with customer while waiting
   Widget _buildQuotePendingActions(BuildContext context) {
+    final isDark = AppColors.isDark(context);
     return Column(
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFFFEF3C7),
+            color: isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.access_time_filled_rounded, color: Color(0xFFD97706), size: 18),
-              SizedBox(width: 8),
+              const Icon(Icons.access_time_filled_rounded, color: Color(0xFFD97706), size: 18),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'تم إرسال العرض بنجاح وبانتظار موافقة العميل لبدء الصيانة ⏳',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF92400E), fontWeight: FontWeight.w600),
+                  context.tr('quote_pending_desc'),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? const Color(0xFFFDE68A) : const Color(0xFF92400E),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -487,15 +509,16 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
   // 3b. Quote Rejected Actions: Show rejection card & inspection fee credited notification
   Widget _buildQuoteRejectedActions(BuildContext context) {
     final fee = order.inspectionFee ?? '50.00';
+    final isDark = AppColors.isDark(context);
     return Column(
       children: [
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFDCFCE7),
+            color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF86EFAC)),
+            border: Border.all(color: isDark ? const Color(0xFF059669) : const Color(0xFF86EFAC)),
           ),
           child: Row(
             children: [
@@ -503,10 +526,10 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'قام العميل برفض عرض السعر.\nتم احتساب وإضافة أجور الكشفية ($fee ل.س) مباشرة إلى محفظتك 💼✅',
-                  style: const TextStyle(
+                  '${context.tr('quote_rejected_desc')}\n(${context.tr('inspection_fee')}: $fee ${context.tr('currency')})',
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF15803D),
+                    color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF15803D),
                     fontWeight: FontWeight.bold,
                     height: 1.4,
                   ),
@@ -524,7 +547,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
                   context.read<HomeBloc>().add(const HomeEvent.changeTab(2));
                 },
                 icon: const Icon(Icons.account_balance_wallet_rounded, size: 16),
-                label: const Text('عرض المحفظة 💳', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                label: Text(context.tr('tab_wallet'), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF003882),
                   foregroundColor: Colors.white,
@@ -550,7 +573,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => _openClosureRequestSheet(context),
             icon: const Icon(Icons.check_circle_outline_rounded, size: 18),
-            label: const Text('إنهاء العمل وطلب كود الإغلاق 🏁', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('finish_and_closure'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF16A34A),
               foregroundColor: Colors.white,
@@ -567,11 +590,11 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _openSendQuoteSheet(context, isAddon: true),
-                icon: const Icon(Icons.add_circle_outline_rounded, size: 15, color: Color(0xFF003882)),
-                label: const Text('عرض إضافي ➕', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF003882))),
+                icon: Icon(Icons.add_circle_outline_rounded, size: 15, color: AppColors.primary(context)),
+                label: Text(context.tr('send_addon_quote'), style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary(context))),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  side: BorderSide(color: AppColors.border(context)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
                 ),
               ),
@@ -582,7 +605,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               child: OutlinedButton.icon(
                 onPressed: () => _openWaitingForPartsDialog(context),
                 icon: const Icon(Icons.hourglass_top_rounded, size: 15, color: Color(0xFFD97706)),
-                label: const Text('انتظار قطعة ⏳', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
+                label: Text(context.tr('waiting_for_parts_btn'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFD97706))),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   side: const BorderSide(color: Color(0xFFFDE68A)),
@@ -609,7 +632,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
               context.read<HomeBloc>().add(HomeEvent.resumeOrder(order.orderId));
             },
             icon: const Icon(Icons.play_arrow_rounded, size: 20),
-            label: const Text('استئناف العمل على الطلب الآن ▶️', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('resume_order_btn'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF003882),
               foregroundColor: Colors.white,
@@ -634,7 +657,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: () => _openClosureVerificationDialog(context),
             icon: const Icon(Icons.pin_rounded, size: 18),
-            label: const Text('إدخال كود الإغلاق من العميل 🔐', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            label: Text(context.tr('enter_closure_code_btn'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF16A34A),
               foregroundColor: Colors.white,
@@ -665,7 +688,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           );
         },
         icon: const Icon(Icons.chat_bubble_rounded, size: 16),
-        label: const Text('محادثة العميل 💬', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+        label: Text(context.tr('chat_with_client'), style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF003882),
           foregroundColor: Colors.white,
@@ -677,16 +700,16 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMapButton() {
+  Widget _buildMapButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
+        color: AppColors.inputFill(context),
         borderRadius: BorderRadius.circular(12),
       ),
       child: IconButton(
-        icon: const Icon(Icons.my_location_rounded, color: Color(0xFF003882), size: 20),
+        icon: Icon(Icons.my_location_rounded, color: AppColors.primary(context), size: 20),
         onPressed: onLocateClient,
-        tooltip: 'موقع العميل على الخريطة',
+        tooltip: context.tr('address'),
       ),
     );
   }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/authenticated_image.dart';
 import '../../domain/entities/chat_message.dart';
 import '../bloc/chat_bloc.dart';
@@ -17,17 +19,14 @@ class ChatPage extends StatelessWidget {
   const ChatPage({
     super.key,
     required this.orderId,
-    this.clientName = 'أحمد محمود',
+    this.clientName = 'العميل',
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => getIt<ChatBloc>()..add(ChatEvent.init(orderId)),
-      child: Directionality(
-        textDirection: TextDirection.rtl,
-        child: _ChatView(orderId: orderId, clientName: clientName),
-      ),
+      child: _ChatView(orderId: orderId, clientName: clientName),
     );
   }
 }
@@ -75,61 +74,58 @@ class _ChatViewState extends State<_ChatView> {
   void _showAttachmentSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface(context),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
-                    borderRadius: BorderRadius.circular(2),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border(context),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Text(
+                context.isArabic ? 'إرسال صورة في المحادثة' : 'Send Photo in Chat',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary(context),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildSourceButton(
+                    icon: Icons.camera_alt_rounded,
+                    label: context.isArabic ? 'الكاميرا' : 'Camera',
+                    color: const Color(0xFF0045A5),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _pickImage(ImageSource.camera);
+                    },
                   ),
-                ),
-                const Text(
-                  'إرسال صورة في المحادثة',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                  _buildSourceButton(
+                    icon: Icons.photo_library_rounded,
+                    label: context.isArabic ? 'المعرض' : 'Gallery',
+                    color: const Color(0xFF16A34A),
+                    onTap: () {
+                      Navigator.of(ctx).pop();
+                      _pickImage(ImageSource.gallery);
+                    },
                   ),
-                ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildSourceButton(
-                      icon: Icons.camera_alt_rounded,
-                      label: 'الكاميرا',
-                      color: const Color(0xFF0045A5),
-                      onTap: () {
-                        Navigator.of(ctx).pop();
-                        _pickImage(ImageSource.camera);
-                      },
-                    ),
-                    _buildSourceButton(
-                      icon: Icons.photo_library_rounded,
-                      label: 'المعرض',
-                      color: const Color(0xFF16A34A),
-                      onTap: () {
-                        Navigator.of(ctx).pop();
-                        _pickImage(ImageSource.gallery);
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -199,15 +195,18 @@ class _ChatViewState extends State<_ChatView> {
     } else if (hour > 12) {
       hour -= 12;
     }
-    return '$hour:$minute ${isAm ? "ص" : "م"}';
+    final period = context.isArabic ? (isAm ? "ص" : "م") : (isAm ? "AM" : "PM");
+    return '$hour:$minute $period';
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: AppColors.background(context),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface(context),
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
@@ -215,11 +214,13 @@ class _ChatViewState extends State<_ChatView> {
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: Row(
-            textDirection: TextDirection.rtl,
             children: [
-              // Back Button (In RTL points to the right)
               IconButton(
-                icon: const Icon(Icons.arrow_forward_rounded, color: Color(0xFF1E293B), size: 24),
+                icon: Icon(
+                  context.isRtl ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+                  color: AppColors.textPrimary(context),
+                  size: 24,
+                ),
                 onPressed: () => Navigator.of(context).pop(),
               ),
               const SizedBox(width: 4),
@@ -230,8 +231,8 @@ class _ChatViewState extends State<_ChatView> {
                 height: 44,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFEEF2FF),
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                  color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
+                  border: Border.all(color: AppColors.border(context), width: 1.5),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -240,10 +241,10 @@ class _ChatViewState extends State<_ChatView> {
                     ),
                   ],
                 ),
-                child: const Center(
+                child: Center(
                   child: Icon(
                     Icons.person_rounded,
-                    color: Color(0xFF0045A5),
+                    color: AppColors.primary(context),
                     size: 26,
                   ),
                 ),
@@ -258,19 +259,19 @@ class _ChatViewState extends State<_ChatView> {
                   children: [
                     Text(
                       widget.clientName,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF003882),
+                        color: AppColors.primary(context),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'طلب صيانة #${widget.orderId}',
-                      style: const TextStyle(
+                      '${context.tr('order_no')}${widget.orderId}',
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF64748B),
+                        color: AppColors.textSecondary(context),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -302,15 +303,15 @@ class _ChatViewState extends State<_ChatView> {
                 margin: const EdgeInsets.only(top: 14, bottom: 6),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE9EDF5),
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE9EDF5),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Text(
-                  'اليوم',
+                child: Text(
+                  context.isArabic ? 'اليوم' : 'Today',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF64748B),
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
               ),
@@ -318,24 +319,24 @@ class _ChatViewState extends State<_ChatView> {
               // Messages List
               Expanded(
                 child: state.isLoading && state.messages.isEmpty
-                    ? const Center(
-                        child: CircularProgressIndicator(color: Color(0xFF0045A5)),
+                    ? Center(
+                        child: CircularProgressIndicator(color: AppColors.primary(context)),
                       )
                     : RefreshIndicator(
-                        color: const Color(0xFF0045A5),
+                        color: AppColors.primary(context),
                         onRefresh: () async {
                           context.read<ChatBloc>().add(const ChatEvent.poll());
                         },
                         child: state.messages.isEmpty
-                            ? _buildEmptyState()
+                            ? _buildEmptyState(context)
                             : ListView.builder(
                                 controller: _scrollController,
-                                reverse: true, // newest messages at bottom
+                                reverse: true,
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                 itemCount: state.messages.length,
                                 itemBuilder: (context, index) {
                                   final message = state.messages[index];
-                                  return _buildMessageItem(message);
+                                  return _buildMessageItem(context, message);
                                 },
                               ),
                       ),
@@ -347,9 +348,9 @@ class _ChatViewState extends State<_ChatView> {
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.surface(context),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    border: Border.all(color: AppColors.border(context)),
                   ),
                   child: Row(
                     children: [
@@ -363,9 +364,9 @@ class _ChatViewState extends State<_ChatView> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Text(
-                        'صورة جاهزة للإرسال',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w600),
+                      Text(
+                        context.isArabic ? 'صورة جاهزة للإرسال' : 'Image ready to send',
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context), fontWeight: FontWeight.w600),
                       ),
                       const Spacer(),
                       IconButton(
@@ -381,107 +382,101 @@ class _ChatViewState extends State<_ChatView> {
                 ),
 
               // Bottom Floating Capsule Input Bar
-              // Structured with Left buttons (+, camera), Middle text field, Right send button
               Container(
                 margin: const EdgeInsets.fromLTRB(16, 6, 16, 16),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECEFF6),
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFECEFF6),
                   borderRadius: BorderRadius.circular(35),
+                  border: Border.all(color: AppColors.border(context)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
+                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: SafeArea(
-                  child: Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Row(
-                      children: [
-                        // Left Attachment Button (+)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.add_circle_outline_rounded,
-                            color: Color(0xFF0045A5),
-                            size: 26,
-                          ),
-                          onPressed: state.isSending ? null : _showAttachmentSheet,
+                  child: Row(
+                    children: [
+                      // Attachment Button (+)
+                      IconButton(
+                        icon: Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: AppColors.primary(context),
+                          size: 26,
                         ),
+                        onPressed: state.isSending ? null : _showAttachmentSheet,
+                      ),
 
-                        // Left Camera Button (📷)
-                        IconButton(
-                          icon: const Icon(
-                            Icons.camera_alt_outlined,
-                            color: Color(0xFF475569),
-                            size: 24,
-                          ),
-                          onPressed: state.isSending ? null : () => _pickImage(ImageSource.camera),
+                      // Camera Button
+                      IconButton(
+                        icon: Icon(
+                          Icons.camera_alt_outlined,
+                          color: AppColors.textSecondary(context),
+                          size: 24,
                         ),
+                        onPressed: state.isSending ? null : () => _pickImage(ImageSource.camera),
+                      ),
 
-                        // Middle Arabic Text Field
-                        Expanded(
-                          child: Directionality(
-                            textDirection: TextDirection.rtl,
-                            child: TextField(
-                              controller: _textController,
-                              maxLines: 4,
-                              minLines: 1,
-                              textInputAction: TextInputAction.send,
-                              onSubmitted: (_) => _sendMessage(),
-                              textAlign: TextAlign.right,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF1E293B),
-                              ),
-                              decoration: const InputDecoration(
-                                hintText: 'اكتب رسالة...',
-                                hintStyle: TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF94A3B8),
-                                ),
-                                border: InputBorder.none,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                              ),
+                      // Text Field
+                      Expanded(
+                        child: TextField(
+                          controller: _textController,
+                          maxLines: 4,
+                          minLines: 1,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (_) => _sendMessage(),
+                          textAlign: context.isRtl ? TextAlign.right : TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textPrimary(context),
+                          ),
+                          decoration: InputDecoration(
+                            hintText: context.isArabic ? 'اكتب رسالة...' : 'Type a message...',
+                            hintStyle: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textMuted(context),
                             ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                           ),
                         ),
+                      ),
 
-                        // Right Send Action Button (Blue Circle)
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF0045A5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: state.isSending
-                              ? const Center(
-                                  child: SizedBox(
-                                    width: 18,
-                                    height: 18,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : IconButton(
-                                  icon: Transform.rotate(
-                                    angle: math.pi, // Rotates send airplane to point forward in Arabic RTL
-                                    child: const Icon(
-                                      Icons.send_rounded,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                  onPressed: _sendMessage,
-                                ),
+                      // Send Action Button
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary(context),
+                          shape: BoxShape.circle,
                         ),
-                      ],
-                    ),
+                        child: state.isSending
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              )
+                            : IconButton(
+                                icon: Transform.rotate(
+                                  angle: context.isRtl ? math.pi : 0,
+                                  child: const Icon(
+                                    Icons.send_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                onPressed: _sendMessage,
+                              ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -492,50 +487,53 @@ class _ChatViewState extends State<_ChatView> {
     );
   }
 
-  Widget _buildEmptyState() {
+  Widget _buildEmptyState(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: Color(0xFFEEF2FF),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.chat_bubble_outline_rounded,
               size: 40,
-              color: Color(0xFF0045A5),
+              color: AppColors.primary(context),
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            'لا توجد رسائل سابقة',
+          Text(
+            context.isArabic ? 'لا توجد رسائل سابقة' : 'No previous messages',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF1E293B),
+              color: AppColors.textPrimary(context),
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'يمكنك بدء التواصل مع العميل الآن بخصوص هذا الطلب',
-            style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+          Text(
+            context.isArabic
+                ? 'يمكنك بدء التواصل مع العميل الآن بخصوص هذا الطلب'
+                : 'You can start communicating with the client now regarding this order',
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMessageItem(ChatMessage message) {
+  Widget _buildMessageItem(BuildContext context, ChatMessage message) {
     final isMine = message.isMine;
+    final isDark = AppColors.isDark(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Align(
-        // isMine (Technician / Blue) is aligned to the RIGHT
-        // other (Client / Gray) is aligned to the LEFT
         alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
         child: Column(
           crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -551,7 +549,9 @@ class _ChatViewState extends State<_ChatView> {
                     ? const EdgeInsets.all(4)
                     : const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: isMine ? const Color(0xFF0045A5) : const Color(0xFFF1F3F9),
+                  color: isMine
+                      ? const Color(0xFF0045A5)
+                      : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF1F3F9)),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(18),
                     topRight: const Radius.circular(18),
@@ -586,10 +586,10 @@ class _ChatViewState extends State<_ChatView> {
                           padding: const EdgeInsets.fromLTRB(12, 8, 12, 6),
                           child: Text(
                             message.text!,
-                            textAlign: TextAlign.right,
+                            textAlign: context.isRtl ? TextAlign.right : TextAlign.left,
                             style: TextStyle(
                               fontSize: 14,
-                              color: isMine ? Colors.white : const Color(0xFF1E293B),
+                              color: isMine ? Colors.white : AppColors.textPrimary(context),
                               height: 1.4,
                             ),
                           ),
@@ -599,10 +599,10 @@ class _ChatViewState extends State<_ChatView> {
                     else if (message.text != null && message.text!.isNotEmpty)
                       Text(
                         message.text!,
-                        textAlign: TextAlign.right,
+                        textAlign: context.isRtl ? TextAlign.right : TextAlign.left,
                         style: TextStyle(
                           fontSize: 14,
-                          color: isMine ? Colors.white : const Color(0xFF1E293B),
+                          color: isMine ? Colors.white : AppColors.textPrimary(context),
                           height: 1.4,
                         ),
                       ),
@@ -613,14 +613,14 @@ class _ChatViewState extends State<_ChatView> {
 
             const SizedBox(height: 4),
 
-            // External Timestamp Row (Right for mine, Left for other)
+            // External Timestamp Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4),
               child: Text(
                 _formatTime(message.createdAt),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF94A3B8),
+                  color: AppColors.textMuted(context),
                   fontWeight: FontWeight.w500,
                 ),
               ),

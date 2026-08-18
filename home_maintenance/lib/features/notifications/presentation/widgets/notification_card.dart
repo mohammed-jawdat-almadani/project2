@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../home/presentation/bloc/home_bloc.dart';
 import '../../../home/presentation/bloc/home_event.dart';
 import '../../domain/entities/notification_item.dart';
@@ -15,16 +17,16 @@ class NotificationCard extends StatelessWidget {
     required this.onMarkAsRead,
   });
 
-  String _formatDateTime(DateTime? dateTime) {
+  String _formatDateTime(BuildContext context, DateTime? dateTime) {
     if (dateTime == null) return '';
     final now = DateTime.now();
     final diff = now.difference(dateTime);
 
-    if (diff.inSeconds < 60) return 'الآن';
-    if (diff.inMinutes < 60) return 'منذ ${diff.inMinutes} دقيقة';
-    if (diff.inHours < 24) return 'منذ ${diff.inHours} ساعة';
-    if (diff.inDays == 1) return 'أمس';
-    if (diff.inDays < 7) return 'منذ ${diff.inDays} أيام';
+    if (diff.inSeconds < 60) return context.isArabic ? 'الآن' : 'Just now';
+    if (diff.inMinutes < 60) return context.isArabic ? 'منذ ${diff.inMinutes} دقيقة' : '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return context.isArabic ? 'منذ ${diff.inHours} ساعة' : '${diff.inHours}h ago';
+    if (diff.inDays == 1) return context.isArabic ? 'أمس' : 'Yesterday';
+    if (diff.inDays < 7) return context.isArabic ? 'منذ ${diff.inDays} أيام' : '${diff.inDays}d ago';
     return '${dateTime.year}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}';
   }
 
@@ -41,29 +43,30 @@ class NotificationCard extends StatelessWidget {
     }
   }
 
-  Color _getCategoryBgColor(String category) {
+  Color _getCategoryBgColor(BuildContext context, String category) {
+    final isDark = AppColors.isDark(context);
     switch (category) {
       case 'orders':
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
       case 'financial':
-        return const Color(0xFFDCFCE7);
+        return isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       case 'admin':
-        return const Color(0xFFF3E8FF);
+        return isDark ? const Color(0xFF581C87).withValues(alpha: 0.3) : const Color(0xFFF3E8FF);
       default:
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
     }
   }
 
-  String _getCategoryLabel(String category) {
+  String _getCategoryLabel(BuildContext context, String category) {
     switch (category) {
       case 'orders':
-        return 'طلب صيانة';
+        return context.isArabic ? 'طلب صيانة' : 'Order';
       case 'financial':
-        return 'معاملة مالية';
+        return context.isArabic ? 'معاملة مالية' : 'Finance';
       case 'admin':
-        return 'إشعار إداري';
+        return context.isArabic ? 'إشعار إداري' : 'Admin';
       default:
-        return 'إشعار عام';
+        return context.isArabic ? 'إشعار عام' : 'General';
     }
   }
 
@@ -87,9 +90,9 @@ class NotificationCard extends StatelessWidget {
 
   void _showDetailsBottomSheet(BuildContext context) {
     final catColor = _getCategoryColor(item.category);
-    final catBgColor = _getCategoryBgColor(item.category);
+    final catBgColor = _getCategoryBgColor(context, item.category);
     final catIcon = _getCategoryIcon(item.category);
-    final catLabel = _getCategoryLabel(item.category);
+    final catLabel = _getCategoryLabel(context, item.category);
 
     showModalBottomSheet(
       context: context,
@@ -97,9 +100,9 @@ class NotificationCard extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+          decoration: BoxDecoration(
+            color: AppColors.surface(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
           ),
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           child: Column(
@@ -113,7 +116,7 @@ class NotificationCard extends StatelessWidget {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: AppColors.border(context),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -153,10 +156,10 @@ class NotificationCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           item.title,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.textPrimary(context),
                           ),
                         ),
                       ],
@@ -166,15 +169,15 @@ class NotificationCard extends StatelessWidget {
               ),
 
               const SizedBox(height: 16),
-              const Divider(color: Color(0xFFF1F5F9)),
+              Divider(color: AppColors.border(context)),
               const SizedBox(height: 12),
 
               // Notification Body Text
               Text(
                 item.body,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
-                  color: Color(0xFF334155),
+                  color: AppColors.textPrimary(context),
                   height: 1.5,
                 ),
               ),
@@ -185,9 +188,9 @@ class NotificationCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: AppColors.inputFill(context),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: AppColors.border(context)),
                 ),
                 child: Column(
                   children: [
@@ -195,16 +198,16 @@ class NotificationCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'المرجع المرتبط:',
-                            style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                          Text(
+                            context.isArabic ? 'المرجع المرتبط:' : 'Related Reference:',
+                            style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context)),
                           ),
                           Text(
-                            '${item.targetType == "Order" ? "طلب صيانة" : "عنصر"} #${item.targetId}',
-                            style: const TextStyle(
+                            '${item.targetType == "Order" ? context.tr('order_no') : "#"}${item.targetId}',
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF003882),
+                              color: AppColors.primary(context),
                             ),
                           ),
                         ],
@@ -214,18 +217,18 @@ class NotificationCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'تاريخ ووقت الإشعار:',
-                          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+                        Text(
+                          context.tr('date_time'),
+                          style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context)),
                         ),
                         Text(
                           item.createdAt != null
                               ? '${item.createdAt!.year}/${item.createdAt!.month.toString().padLeft(2, '0')}/${item.createdAt!.day.toString().padLeft(2, '0')} - ${item.createdAt!.hour.toString().padLeft(2, '0')}:${item.createdAt!.minute.toString().padLeft(2, '0')}'
-                              : 'غير متوفر',
-                          style: const TextStyle(
+                              : '-',
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.textPrimary(context),
                           ),
                         ),
                       ],
@@ -244,8 +247,11 @@ class NotificationCard extends StatelessWidget {
                     Navigator.of(ctx).pop();
                     _navigateBasedOnTarget(context);
                   },
-                  icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                  label: Text(_getActionLabel()),
+                  icon: Icon(
+                    context.isRtl ? Icons.arrow_back_rounded : Icons.arrow_forward_rounded,
+                    size: 18,
+                  ),
+                  label: Text(_getActionLabel(context)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF003882),
                     foregroundColor: Colors.white,
@@ -264,15 +270,15 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  String _getActionLabel() {
+  String _getActionLabel(BuildContext context) {
     if (item.category == 'orders' || item.targetType == 'Order') {
-      return 'الانتقال إلى خريطة الطلبات والبدء';
+      return context.isArabic ? 'الانتقال إلى خريطة الطلبات والبدء' : 'Go to Order Map';
     } else if (item.category == 'financial') {
-      return 'الانتقال إلى المحفظة';
+      return context.isArabic ? 'الانتقال إلى المحفظة' : 'Go to Wallet';
     } else if (item.category == 'admin') {
-      return 'الذهاب إلى الملف الشخصي';
+      return context.isArabic ? 'الذهاب إلى الملف الشخصي' : 'Go to Profile';
     }
-    return 'الرجوع للرئيسية';
+    return context.isArabic ? 'الرجوع للرئيسية' : 'Go Home';
   }
 
   void _navigateBasedOnTarget(BuildContext context) {
@@ -294,22 +300,25 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final catColor = _getCategoryColor(item.category);
-    final catBgColor = _getCategoryBgColor(item.category);
+    final catBgColor = _getCategoryBgColor(context, item.category);
     final catIcon = _getCategoryIcon(item.category);
     final isUnread = !item.isRead;
+    final isDark = AppColors.isDark(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
       decoration: BoxDecoration(
-        color: isUnread ? const Color(0xFFF0F7FF) : Colors.white,
+        color: isUnread
+            ? (isDark ? const Color(0xFF1E293B) : const Color(0xFFF0F7FF))
+            : AppColors.surface(context),
         borderRadius: BorderRadius.circular(18.0),
         border: Border.all(
-          color: isUnread ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
+          color: isUnread ? const Color(0xFF38BDF8) : AppColors.border(context),
           width: isUnread ? 1.4 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isUnread ? 0.05 : 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : (isUnread ? 0.05 : 0.02)),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -355,7 +364,7 @@ class NotificationCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: isUnread ? FontWeight.bold : FontWeight.w600,
-                                color: const Color(0xFF1E293B),
+                                color: AppColors.textPrimary(context),
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -365,9 +374,12 @@ class NotificationCard extends StatelessWidget {
                             Container(
                               width: 9,
                               height: 9,
-                              margin: const EdgeInsets.only(right: 6),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF003882),
+                              margin: EdgeInsets.only(
+                                right: context.isRtl ? 6 : 0,
+                                left: context.isRtl ? 0 : 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary(context),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -376,9 +388,9 @@ class NotificationCard extends StatelessWidget {
                       const SizedBox(height: 5),
                       Text(
                         item.body,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF64748B),
+                          color: AppColors.textSecondary(context),
                           height: 1.35,
                         ),
                         maxLines: 2,
@@ -392,15 +404,15 @@ class NotificationCard extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF1F5F9),
+                                color: AppColors.inputFill(context),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                '${item.targetType == "Order" ? "طلب" : "عنصر"} #${item.targetId}',
-                                style: const TextStyle(
+                                '${item.targetType == "Order" ? (context.isArabic ? "طلب" : "Order") : "#"} #${item.targetId}',
+                                style: TextStyle(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF475569),
+                                  color: AppColors.textSecondary(context),
                                 ),
                               ),
                             )
@@ -412,7 +424,7 @@ class NotificationCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                _getCategoryLabel(item.category),
+                                _getCategoryLabel(context, item.category),
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -421,10 +433,10 @@ class NotificationCard extends StatelessWidget {
                               ),
                             ),
                           Text(
-                            _formatDateTime(item.createdAt),
-                            style: const TextStyle(
+                            _formatDateTime(context, item.createdAt),
+                            style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFF94A3B8),
+                              color: AppColors.textMuted(context),
                             ),
                           ),
                         ],

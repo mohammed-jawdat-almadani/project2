@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ClosureVerificationDialog extends StatefulWidget {
   final int orderId;
@@ -33,9 +35,11 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface(context),
       child: Padding(
         padding: const EdgeInsets.all(22.0),
         child: Form(
@@ -46,8 +50,8 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFDCFCE7),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -57,19 +61,21 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
                 ),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'تأكيد إتمام العمل وإغلاق الطلب',
+              Text(
+                context.tr('enter_closure_code_btn'),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
-                'اطلب كود الإغلاق الرقمي من العميل وأدخله هنا لتحويل الطلب إلى مكتمل وإيداع المستحقات في محفظتك 💼',
+              Text(
+                context.isArabic
+                    ? 'اطلب كود الإغلاق الرقمي من العميل وأدخله هنا لتحويل الطلب إلى مكتمل وإيداع المستحقات في محفظتك 💼'
+                    : 'Request the closure code from the client and enter it here to complete the order.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context), height: 1.4),
               ),
               const SizedBox(height: 18),
 
@@ -78,29 +84,29 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
                 controller: _codeController,
                 keyboardType: TextInputType.text,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 4.0,
-                  color: Color(0xFF003882),
+                  color: AppColors.primary(context),
                 ),
                 decoration: InputDecoration(
-                  hintText: 'رمز الإغلاق',
-                  hintStyle: const TextStyle(fontSize: 14, letterSpacing: 0, color: Color(0xFF94A3B8)),
+                  hintText: context.tr('closure_code'),
+                  hintStyle: TextStyle(fontSize: 14, letterSpacing: 0, color: AppColors.textSecondary(context)),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: AppColors.inputFill(context),
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                 ),
                 validator: (val) {
-                  if (val == null || val.trim().isEmpty) return 'يرجى إدخال كود الإغلاق';
+                  if (val == null || val.trim().isEmpty) return context.tr('required_field');
                   return null;
                 },
               ),
@@ -114,10 +120,12 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary(context),
+                        side: BorderSide(color: AppColors.border(context)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('إلغاء', style: TextStyle(color: Color(0xFF64748B))),
+                      child: Text(context.tr('cancel')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -130,7 +138,7 @@ class _ClosureVerificationDialogState extends State<ClosureVerificationDialog> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('تحقق وإنهاء 🏁'),
+                      child: Text(context.tr('confirm')),
                     ),
                   ),
                 ],

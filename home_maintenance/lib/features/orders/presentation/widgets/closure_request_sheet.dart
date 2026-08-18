@@ -1,15 +1,19 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class ClosureRequestSheet extends StatefulWidget {
   final int orderId;
-  final Function(int orderId, List<File> photos) onSubmit;
+  final Function(int orderId, List<File> photos)? onSubmit;
+  final Function(int orderId, List<File> photos)? onSubmitPhotos;
 
   const ClosureRequestSheet({
     super.key,
     required this.orderId,
-    required this.onSubmit,
+    this.onSubmit,
+    this.onSubmitPhotos,
   });
 
   @override
@@ -23,7 +27,7 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
   Future<void> _pickPhoto() async {
     if (_photos.length >= 3) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('الحد الأقصى هو 3 صور لإثبات إنجاز العمل')),
+        SnackBar(content: Text(context.isArabic ? 'الحد الأقصى هو 3 صور لإثبات إنجاز العمل' : 'Maximum 3 photos allowed')),
       );
       return;
     }
@@ -44,20 +48,24 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
   void _submit() {
     if (_photos.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('يرجى التقاط صورة واحدة على الأقل لإثبات إتمام الصيانة 📷')),
+        SnackBar(content: Text(context.isArabic ? 'يرجى التقاط صورة واحدة على الأقل لإثبات إتمام الصيانة 📷' : 'Please capture at least one photo 📷')),
       );
       return;
     }
-    widget.onSubmit(widget.orderId, _photos);
+    if (widget.onSubmitPhotos != null) {
+      widget.onSubmitPhotos!(widget.orderId, _photos);
+    } else if (widget.onSubmit != null) {
+      widget.onSubmit!(widget.orderId, _photos);
+    }
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -76,32 +84,34 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE2E8F0),
+                color: AppColors.border(context),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
 
           // Title
-          const Row(
+          Row(
             children: [
-              Icon(Icons.task_alt_rounded, color: Color(0xFF16A34A), size: 24),
-              SizedBox(width: 8),
+              const Icon(Icons.task_alt_rounded, color: Color(0xFF16A34A), size: 24),
+              const SizedBox(width: 8),
               Text(
-                'إنهاء العمل وطلب كود الإغلاق 🏁',
+                '${context.tr('finish_and_closure')} 🏁',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
             ],
           ),
 
           const SizedBox(height: 10),
-          const Text(
-            'قم بالتقاط (1 إلى 3 صور) لإثبات اكتمال الصيانة بنجاح. سيتم إرسال كود الإغلاق الرقمي للعميل فوراً لتقديمه لك لتأكيد إنهاء الطلب.',
-            style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+          Text(
+            context.isArabic
+                ? 'قم بالتقاط (1 إلى 3 صور) لإثبات اكتمال الصيانة بنجاح. سيتم إرسال كود الإغلاق الرقمي للعميل فوراً لتقديمه لك لتأكيد إنهاء الطلب.'
+                : 'Take 1 to 3 photos to verify task completion. A closure code will be issued to the client.',
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context), height: 1.4),
           ),
 
           const SizedBox(height: 16),
@@ -117,16 +127,20 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
                     Container(
                       width: 75,
                       height: 75,
-                      margin: const EdgeInsets.only(left: 10),
+                      margin: EdgeInsets.only(
+                        left: context.isRtl ? 10 : 0,
+                        right: context.isRtl ? 0 : 10,
+                      ),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         image: DecorationImage(image: FileImage(file), fit: BoxFit.cover),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(color: AppColors.border(context)),
                       ),
                     ),
                     Positioned(
                       top: 2,
-                      right: 12,
+                      right: context.isRtl ? 12 : 2,
+                      left: context.isRtl ? null : 12,
                       child: GestureDetector(
                         onTap: () => _removePhoto(idx),
                         child: Container(
@@ -150,16 +164,19 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
                     width: 75,
                     height: 75,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
+                      color: AppColors.inputFill(context),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFCBD5E1), style: BorderStyle.solid),
+                      border: Border.all(color: AppColors.border(context), style: BorderStyle.solid),
                     ),
-                    child: const Column(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add_a_photo_outlined, color: Color(0xFF003882), size: 24),
-                        SizedBox(height: 4),
-                        Text('إضافة صورة', style: TextStyle(fontSize: 10, color: Color(0xFF003882), fontWeight: FontWeight.bold)),
+                        Icon(Icons.add_a_photo_outlined, color: AppColors.primary(context), size: 24),
+                        const SizedBox(height: 4),
+                        Text(
+                          context.isArabic ? 'إضافة صورة' : 'Add Photo',
+                          style: TextStyle(fontSize: 10, color: AppColors.primary(context), fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -175,9 +192,9 @@ class _ClosureRequestSheetState extends State<ClosureRequestSheet> {
             child: ElevatedButton.icon(
               onPressed: _submit,
               icon: const Icon(Icons.send_rounded, size: 18),
-              label: const Text(
-                'إرسال وإصدار كود الإغلاق للعميل 🔐',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              label: Text(
+                context.isArabic ? 'إرسال وإصدار كود الإغلاق للعميل 🔐' : 'Submit & Issue Closure Code 🔐',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF16A34A),

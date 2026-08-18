@@ -139,6 +139,7 @@ import '../../features/wallet/presentation/bloc/wallet_bloc.dart' as _i87;
 import '../notifications/notification_action_handler.dart' as _i197;
 import '../services/fcm_service.dart' as _i928;
 import '../services/location_service.dart' as _i669;
+import '../settings/presentation/bloc/settings_bloc.dart' as _i937;
 import 'register_module.dart' as _i291;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -159,6 +160,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i197.NotificationActionHandler(),
     );
     gh.lazySingleton<_i669.LocationService>(() => _i669.LocationService());
+    gh.lazySingleton<_i937.SettingsBloc>(() => _i937.SettingsBloc());
     gh.lazySingleton<_i224.WalletRemoteDataSource>(
       () => _i224.WalletRemoteDataSourceImpl(gh<_i361.Dio>()),
     );

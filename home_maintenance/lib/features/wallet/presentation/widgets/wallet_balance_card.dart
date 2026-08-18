@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
 import '../../domain/entities/wallet_info.dart';
 
 class WalletBalanceCard extends StatelessWidget {
@@ -57,9 +58,9 @@ class WalletBalanceCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text(
-                    'محفظة الفني',
-                    style: TextStyle(
+                  Text(
+                    context.isArabic ? 'محفظة الفني' : 'Technician Wallet',
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -88,9 +89,9 @@ class WalletBalanceCard extends StatelessWidget {
           const SizedBox(height: 18),
 
           // Available Balance Label & Value
-          const Text(
-            'الرصيد المتاح للسحب',
-            style: TextStyle(
+          Text(
+            context.tr('available_balance'),
+            style: const TextStyle(
               color: Color(0xFF93C5FD),
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -111,9 +112,9 @@ class WalletBalanceCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              const Text(
-                'ل.س',
-                style: TextStyle(
+              Text(
+                context.tr('currency'),
+                style: const TextStyle(
                   color: Color(0xFFE2E8F0),
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -133,16 +134,16 @@ class WalletBalanceCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'الرصيد المعلق (قيد السحب)',
-                    style: TextStyle(
+                  Text(
+                    context.tr('pending_balance'),
+                    style: const TextStyle(
                       color: Color(0xFF94A3B8),
                       fontSize: 11,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${wallet.heldBalance} ل.س',
+                    '${wallet.heldBalance} ${context.tr('currency')}',
                     style: const TextStyle(
                       color: Color(0xFFFCD34D),
                       fontSize: 14,
@@ -155,7 +156,7 @@ class WalletBalanceCard extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRequestWithdrawal,
                 icon: const Icon(Icons.arrow_upward_rounded, size: 16),
-                label: const Text('طلب سحب'),
+                label: Text(context.tr('request_withdrawal_btn')),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: const Color(0xFF003882),

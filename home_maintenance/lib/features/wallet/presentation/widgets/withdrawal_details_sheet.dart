@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/authenticated_image.dart';
 import '../../domain/entities/withdrawal_item.dart';
 
@@ -31,31 +33,32 @@ class WithdrawalDetailsSheet extends StatelessWidget {
     }
   }
 
-  Color _getStatusBgColor(String status) {
+  Color _getStatusBgColor(BuildContext context, String status) {
+    final isDark = AppColors.isDark(context);
     switch (status.toLowerCase()) {
       case 'completed':
-        return const Color(0xFFDCFCE7);
+        return isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       case 'processing':
       case 'pending':
-        return const Color(0xFFFEF3C7);
+        return isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       case 'rejected':
       case 'cancelled':
-        return const Color(0xFFFEE2E2);
+        return isDark ? const Color(0xFF7F1D1D).withValues(alpha: 0.3) : const Color(0xFFFEE2E2);
       default:
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
     }
   }
 
-  String _getStatusLabel(String status) {
+  String _getStatusLabel(BuildContext context, String status) {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'تم التحويل بنجاح ✅';
+        return context.isArabic ? 'تم التحويل بنجاح ✅' : 'Transfer Completed ✅';
       case 'processing':
-        return 'قيد المراجعة والمعالجة ⏳';
+        return context.isArabic ? 'قيد المراجعة والمعالجة ⏳' : 'Under Review ⏳';
       case 'pending':
-        return 'طلب معلق ⏳';
+        return context.isArabic ? 'طلب معلق ⏳' : 'Pending Request ⏳';
       case 'rejected':
-        return 'تم رفض الطلب 🔴';
+        return context.isArabic ? 'تم رفض الطلب 🔴' : 'Request Rejected 🔴';
       default:
         return status;
     }
@@ -64,13 +67,14 @@ class WithdrawalDetailsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(item.status);
-    final statusBgColor = _getStatusBgColor(item.status);
-    final statusLabel = _getStatusLabel(item.status);
+    final statusBgColor = _getStatusBgColor(context, item.status);
+    final statusLabel = _getStatusLabel(context, item.status);
+    final isDark = AppColors.isDark(context);
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
       child: SingleChildScrollView(
@@ -85,7 +89,7 @@ class WithdrawalDetailsSheet extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: AppColors.border(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -99,13 +103,13 @@ class WithdrawalDetailsSheet extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFEEF2FF),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.receipt_rounded,
-                        color: Color(0xFF003882),
+                        color: AppColors.primary(context),
                         size: 22,
                       ),
                     ),
@@ -113,17 +117,17 @@ class WithdrawalDetailsSheet extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'تفاصيل طلب السحب',
+                        Text(
+                          context.tr('withdrawal_details'),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.textPrimary(context),
                           ),
                         ),
                         Text(
-                          'طلب سحب #${item.id}',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                          '${context.isArabic ? "طلب سحب" : "Withdrawal"} #${item.id}',
+                          style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
                         ),
                       ],
                     ),
@@ -148,29 +152,35 @@ class WithdrawalDetailsSheet extends StatelessWidget {
             ),
 
             const SizedBox(height: 16),
-            const Divider(color: Color(0xFFF1F5F9)),
+            Divider(color: AppColors.border(context)),
             const SizedBox(height: 12),
 
             // Main Info Box
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
+                color: AppColors.inputFill(context),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: AppColors.border(context)),
               ),
               child: Column(
                 children: [
-                  _buildDetailRow('المبلغ المسحوب:', '${item.amount} ل.س', isBold: true, valueColor: const Color(0xFF003882)),
-                  const Divider(color: Color(0xFFE2E8F0), height: 16),
-                  _buildDetailRow('المستفيد:', item.shamCashName ?? 'فني الصيانة'),
+                  _buildDetailRow(
+                    context,
+                    context.tr('amount_field'),
+                    '${item.amount} ${context.tr('currency')}',
+                    isBold: true,
+                    valueColor: AppColors.primary(context),
+                  ),
+                  Divider(color: AppColors.border(context), height: 16),
+                  _buildDetailRow(context, context.tr('full_name'), item.shamCashName ?? '-'),
                   const SizedBox(height: 10),
-                  _buildDetailRow('رقم حساب شام كاش:', item.shamCashNumber ?? '-'),
+                  _buildDetailRow(context, context.tr('account_number'), item.shamCashNumber ?? '-'),
                   const SizedBox(height: 10),
-                  _buildDetailRow('تاريخ ووقت الطلب:', _formatDate(item.createdAt)),
+                  _buildDetailRow(context, context.tr('date_time'), _formatDate(item.createdAt)),
                   if (item.rejectionReason != null && item.rejectionReason!.isNotEmpty) ...[
-                    const Divider(color: Color(0xFFE2E8F0), height: 16),
-                    _buildDetailRow('سبب الرفض:', item.rejectionReason!, valueColor: const Color(0xFFDC2626)),
+                    Divider(color: AppColors.border(context), height: 16),
+                    _buildDetailRow(context, context.isArabic ? 'سبب الرفض:' : 'Rejection Reason:', item.rejectionReason!, valueColor: const Color(0xFFDC2626)),
                   ],
                 ],
               ),
@@ -179,13 +189,13 @@ class WithdrawalDetailsSheet extends StatelessWidget {
             // Receipt Section (If uploaded by Admin)
             if (item.hasReceipt) ...[
               const SizedBox(height: 18),
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.attachment_rounded, color: Color(0xFF003882), size: 18),
-                  SizedBox(width: 6),
+                  Icon(Icons.attachment_rounded, color: AppColors.primary(context), size: 18),
+                  const SizedBox(width: 6),
                   Text(
-                    'إشعار التحويل المرفق (اضغط للتكبير):',
-                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                    context.isArabic ? 'إشعار التحويل المرفق (اضغط للتكبير):' : 'Attached Receipt (tap to zoom):',
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
                   ),
                 ],
               ),
@@ -212,13 +222,14 @@ class WithdrawalDetailsSheet extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF64748B),
+                  foregroundColor: AppColors.textSecondary(context),
+                  side: BorderSide(color: AppColors.border(context)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text('إغلاق'),
+                child: Text(context.tr('close')),
               ),
             ),
           ],
@@ -227,20 +238,20 @@ class WithdrawalDetailsSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isBold = false, Color? valueColor}) {
+  Widget _buildDetailRow(BuildContext context, String label, String value, {bool isBold = false, Color? valueColor}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
         ),
         Text(
           value,
           style: TextStyle(
             fontSize: isBold ? 15 : 13,
             fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: valueColor ?? const Color(0xFF1E293B),
+            color: valueColor ?? AppColors.textPrimary(context),
           ),
         ),
       ],

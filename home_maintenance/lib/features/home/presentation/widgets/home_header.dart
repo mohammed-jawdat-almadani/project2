@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -12,6 +14,8 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
         final isAvailable = state.isAvailable;
@@ -20,17 +24,17 @@ class HomeHeader extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(32.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
                 blurRadius: 16,
                 offset: const Offset(0, 4),
               ),
             ],
             border: Border.all(
-              color: const Color(0xFFE2E8F0),
+              color: AppColors.border(context),
               width: 1.0,
             ),
           ),
@@ -50,9 +54,9 @@ class HomeHeader extends StatelessWidget {
                       height: 42,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: const Color(0xFF003882),
+                        color: isDark ? const Color(0xFF1E40AF) : const Color(0xFF003882),
                         border: Border.all(
-                          color: const Color(0xFFD3E3FD),
+                          color: isDark ? const Color(0xFF38BDF8) : const Color(0xFFD3E3FD),
                           width: 2,
                         ),
                       ),
@@ -73,7 +77,10 @@ class HomeHeader extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isAvailable ? const Color(0xFF22C55E) : const Color(0xFF94A3B8),
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(
+                            color: AppColors.surface(context),
+                            width: 2,
+                          ),
                         ),
                       ),
                     ),
@@ -95,13 +102,13 @@ class HomeHeader extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 6.0),
                   decoration: BoxDecoration(
                     color: isAvailable
-                        ? const Color(0xFFF0FDF4)
-                        : const Color(0xFFF8FAFC),
+                        ? (isDark ? const Color(0xFF064E3B) : const Color(0xFFF0FDF4))
+                        : (isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC)),
                     borderRadius: BorderRadius.circular(24.0),
                     border: Border.all(
                       color: isAvailable
-                          ? const Color(0xFF86EFAC)
-                          : const Color(0xFFCBD5E1),
+                          ? (isDark ? const Color(0xFF059669) : const Color(0xFF86EFAC))
+                          : (isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1)),
                       width: 1.2,
                     ),
                   ),
@@ -120,13 +127,13 @@ class HomeHeader extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        isAvailable ? 'متصل' : 'غير متصل',
+                        isAvailable ? context.tr('status_online') : context.tr('status_offline'),
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: isAvailable
-                              ? const Color(0xFF15803D)
-                              : const Color(0xFF64748B),
+                              ? (isDark ? const Color(0xFF6EE7B7) : const Color(0xFF15803D))
+                              : AppColors.textSecondary(context),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -144,7 +151,7 @@ class HomeHeader extends StatelessWidget {
                           activeTrackColor: const Color(0xFF16A34A),
                           activeThumbColor: Colors.white,
                           inactiveThumbColor: Colors.white,
-                          inactiveTrackColor: const Color(0xFFCBD5E1),
+                          inactiveTrackColor: isDark ? const Color(0xFF475569) : const Color(0xFFCBD5E1),
                           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
@@ -164,8 +171,8 @@ class HomeHeader extends StatelessWidget {
                       Container(
                         width: 42,
                         height: 42,
-                        decoration: const BoxDecoration(
-                          color: Color(0xFFF8FAFC),
+                        decoration: BoxDecoration(
+                          color: AppColors.inputFill(context),
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
@@ -173,9 +180,9 @@ class HomeHeader extends StatelessWidget {
                           onPressed: () {
                             context.push('/notifications');
                           },
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.notifications_outlined,
-                            color: Color(0xFF1E293B),
+                            color: AppColors.textPrimary(context),
                             size: 22,
                           ),
                         ),

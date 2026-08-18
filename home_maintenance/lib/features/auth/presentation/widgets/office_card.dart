@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/office.dart';
 
 class OfficeCard extends StatelessWidget {
@@ -11,12 +12,15 @@ class OfficeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: const Color(0xFFDFE5F2),
+        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFDFE5F2),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,28 +28,28 @@ class OfficeCard extends StatelessWidget {
           // Office Name
           Text(
             office.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF111827),
+              color: AppColors.textPrimary(context),
             ),
           ),
           const SizedBox(height: 12),
           // Address Row
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.location_on_outlined,
-                color: Color(0xFF003882),
+                color: AppColors.primary(context),
                 size: 22,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   office.address,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
-                    color: Color(0xFF475569),
+                    color: AppColors.textSecondary(context),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -56,18 +60,18 @@ class OfficeCard extends StatelessWidget {
           // Phone Row
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.phone_outlined,
-                color: Color(0xFF003882),
+                color: AppColors.primary(context),
                 size: 20,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   office.phone,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
-                    color: Color(0xFF475569),
+                    color: AppColors.textSecondary(context),
                     fontWeight: FontWeight.w500,
                   ),
                 ),

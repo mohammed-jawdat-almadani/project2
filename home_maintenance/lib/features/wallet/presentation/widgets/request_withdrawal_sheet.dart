@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/sham_cash_account.dart';
 import '../../domain/entities/wallet_info.dart';
 import '../bloc/wallet_bloc.dart';
@@ -44,11 +46,12 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
   @override
   Widget build(BuildContext context) {
     final available = double.tryParse(widget.wallet.availableBalance) ?? 0.0;
+    final isDark = AppColors.isDark(context);
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      decoration: BoxDecoration(
+        color: AppColors.surface(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -70,7 +73,7 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: AppColors.border(context),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -80,26 +83,26 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'طلب سحب أرباح 💸',
+                  Text(
+                    '${context.tr('request_withdrawal_btn')} 💸',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFDCFCE7),
+                      color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      'المتاح: ${widget.wallet.availableBalance} ل.س',
-                      style: const TextStyle(
+                      '${context.tr('available_balance')}: ${widget.wallet.availableBalance} ${context.tr('currency')}',
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF16A34A),
+                        color: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF16A34A),
                       ),
                     ),
                   ),
@@ -112,25 +115,25 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
+                  color: AppColors.inputFill(context),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: AppColors.border(context)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.account_balance_rounded, color: Color(0xFF003882), size: 20),
+                    Icon(Icons.account_balance_rounded, color: AppColors.primary(context), size: 20),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'التحويل إلى: ${widget.shamCashAccount.name}',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+                            '${context.isArabic ? "التحويل إلى" : "Transfer to"}: ${widget.shamCashAccount.name}',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary(context)),
                           ),
                           Text(
-                            'حساب رقم: ${widget.shamCashAccount.number}',
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                            '${context.tr('account_number')}: ${widget.shamCashAccount.number}',
+                            style: TextStyle(fontSize: 11, color: AppColors.textSecondary(context)),
                           ),
                         ],
                       ),
@@ -142,49 +145,50 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
               const SizedBox(height: 16),
 
               // Amount Field
-              const Text(
-                'المبلغ المراد سحبه (ل.س):',
+              Text(
+                '${context.tr('amount_field')} (${context.tr('currency')}):',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF334155),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF003882)),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary(context)),
                 decoration: InputDecoration(
                   hintText: '100.00',
-                  hintStyle: const TextStyle(fontSize: 16, color: Color(0xFF94A3B8)),
-                  prefixIcon: const Icon(Icons.attach_money_rounded, size: 22, color: Color(0xFF003882)),
-                  suffixText: 'ل.س',
+                  hintStyle: TextStyle(fontSize: 16, color: AppColors.textMuted(context)),
+                  prefixIcon: Icon(Icons.attach_money_rounded, size: 22, color: AppColors.primary(context)),
+                  suffixText: context.tr('currency'),
+                  suffixStyle: TextStyle(color: AppColors.textSecondary(context), fontWeight: FontWeight.bold),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: AppColors.inputFill(context),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
-                    return 'يرجى إدخال المبلغ';
+                    return context.tr('required_field');
                   }
                   final numVal = double.tryParse(val);
                   if (numVal == null || numVal <= 0) {
-                    return 'يرجى إدخال مبلغ صحيح';
+                    return context.isArabic ? 'يرجى إدخال مبلغ صحيح' : 'Please enter a valid amount';
                   }
                   if (numVal < 100.0) {
-                    return 'الحد الأدنى لطلب السحب هو 100.00 ل.س';
+                    return context.isArabic ? 'الحد الأدنى لطلب السحب هو 100.00 ل.س' : 'Minimum withdrawal is 100.00';
                   }
                   if (numVal > available) {
-                    return 'المبلغ المطلوب يتجاوز الرصيد المتاح';
+                    return context.isArabic ? 'المبلغ المطلوب يتجاوز الرصيد المتاح' : 'Amount exceeds available balance';
                   }
                   return null;
                 },
@@ -197,16 +201,20 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    _buildQuickChip(100.0, '100 ل.س'),
-                    _buildQuickChip(250.0, '250 ل.س'),
-                    _buildQuickChip(500.0, '500 ل.س'),
+                    _buildQuickChip(context, 100.0, '100 ${context.tr('currency')}'),
+                    _buildQuickChip(context, 250.0, '250 ${context.tr('currency')}'),
+                    _buildQuickChip(context, 500.0, '500 ${context.tr('currency')}'),
                     if (available > 0)
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
+                        padding: EdgeInsets.only(
+                          left: context.isRtl ? 8.0 : 0,
+                          right: context.isRtl ? 0 : 8.0,
+                        ),
                         child: ActionChip(
-                          label: const Text('كامل الرصيد 🌟'),
-                          backgroundColor: const Color(0xFFEEF2FF),
-                          labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF003882)),
+                          label: Text(context.isArabic ? 'كامل الرصيد 🌟' : 'Full Balance 🌟'),
+                          backgroundColor: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
+                          labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary(context)),
+                          side: BorderSide(color: AppColors.border(context)),
                           onPressed: () => _setAmount(available),
                         ),
                       ),
@@ -222,9 +230,9 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
                 child: ElevatedButton.icon(
                   onPressed: _submit,
                   icon: const Icon(Icons.check_circle_outline_rounded, size: 20),
-                  label: const Text(
-                    'تأكيد إرسال طلب السحب',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  label: Text(
+                    context.tr('confirm'),
+                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF003882),
@@ -243,13 +251,17 @@ class _RequestWithdrawalSheetState extends State<RequestWithdrawalSheet> {
     );
   }
 
-  Widget _buildQuickChip(double amount, String label) {
+  Widget _buildQuickChip(BuildContext context, double amount, String label) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
+      padding: EdgeInsets.only(
+        left: context.isRtl ? 8.0 : 0,
+        right: context.isRtl ? 0 : 8.0,
+      ),
       child: ActionChip(
         label: Text(label),
-        backgroundColor: const Color(0xFFF1F5F9),
-        labelStyle: const TextStyle(fontSize: 12, color: Color(0xFF475569)),
+        backgroundColor: AppColors.inputFill(context),
+        side: BorderSide(color: AppColors.border(context)),
+        labelStyle: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
         onPressed: () => _setAmount(amount),
       ),
     );

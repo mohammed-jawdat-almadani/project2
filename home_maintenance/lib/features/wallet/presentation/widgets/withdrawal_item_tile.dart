@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/withdrawal_item.dart';
 import 'withdrawal_details_sheet.dart';
 
@@ -31,31 +33,32 @@ class WithdrawalItemTile extends StatelessWidget {
     }
   }
 
-  Color _getStatusBgColor(String status) {
+  Color _getStatusBgColor(BuildContext context, String status) {
+    final isDark = AppColors.isDark(context);
     switch (status.toLowerCase()) {
       case 'completed':
-        return const Color(0xFFDCFCE7);
+        return isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       case 'processing':
       case 'pending':
-        return const Color(0xFFFEF3C7);
+        return isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       case 'rejected':
       case 'cancelled':
-        return const Color(0xFFFEE2E2);
+        return isDark ? const Color(0xFF7F1D1D).withValues(alpha: 0.3) : const Color(0xFFFEE2E2);
       default:
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
     }
   }
 
-  String _getStatusLabel(String status) {
+  String _getStatusLabel(BuildContext context, String status) {
     switch (status.toLowerCase()) {
       case 'completed':
-        return 'تم التحويل ✅';
+        return context.isArabic ? 'تم التحويل ✅' : 'Completed ✅';
       case 'processing':
-        return 'قيد المعالجة ⏳';
+        return context.isArabic ? 'قيد المعالجة ⏳' : 'Processing ⏳';
       case 'pending':
-        return 'معلق ⏳';
+        return context.isArabic ? 'معلق ⏳' : 'Pending ⏳';
       case 'rejected':
-        return 'مرفوض 🔴';
+        return context.isArabic ? 'مرفوض 🔴' : 'Rejected 🔴';
       default:
         return status;
     }
@@ -64,18 +67,19 @@ class WithdrawalItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(item.status);
-    final statusBgColor = _getStatusBgColor(item.status);
-    final statusLabel = _getStatusLabel(item.status);
+    final statusBgColor = _getStatusBgColor(context, item.status);
+    final statusLabel = _getStatusLabel(context, item.status);
+    final isDark = AppColors.isDark(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18.0),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: AppColors.border(context)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -122,11 +126,11 @@ class WithdrawalItemTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${item.amount} ل.س',
-                            style: const TextStyle(
+                            '${item.amount} ${context.tr('currency')}',
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
+                              color: AppColors.textPrimary(context),
                             ),
                           ),
                           Container(
@@ -151,24 +155,24 @@ class WithdrawalItemTile extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            item.shamCashName ?? 'شام كاش',
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                            item.shamCashName ?? 'Sham Cash',
+                            style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
                           ),
                           Text(
                             _formatDate(item.createdAt),
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF94A3B8)),
+                            style: TextStyle(fontSize: 11, color: AppColors.textMuted(context)),
                           ),
                         ],
                       ),
                       if (item.hasReceipt) ...[
                         const SizedBox(height: 4),
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.receipt_long_rounded, size: 13, color: Color(0xFF16A34A)),
-                            SizedBox(width: 4),
+                            const Icon(Icons.receipt_long_rounded, size: 13, color: Color(0xFF16A34A)),
+                            const SizedBox(width: 4),
                             Text(
-                              'إشعار التحويل متوفر 📎',
-                              style: TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
+                              context.isArabic ? 'إشعار التحويل متوفر 📎' : 'Receipt available 📎',
+                              style: const TextStyle(fontSize: 11, color: Color(0xFF16A34A), fontWeight: FontWeight.w600),
                             ),
                           ],
                         ),
@@ -177,7 +181,11 @@ class WithdrawalItemTile extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Icon(Icons.chevron_left_rounded, color: Color(0xFF94A3B8), size: 20),
+                Icon(
+                  context.isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
+                  color: AppColors.textMuted(context),
+                  size: 20,
+                ),
               ],
             ),
           ),

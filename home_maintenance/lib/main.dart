@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'firebase_options.dart';
 import 'core/di/injection.dart';
+import 'core/localization/app_localizations.dart';
 import 'core/router/app_router.dart';
 import 'core/services/fcm_service.dart';
+import 'core/settings/presentation/bloc/settings_bloc.dart';
+import 'core/settings/presentation/bloc/settings_event.dart';
+import 'core/settings/presentation/bloc/settings_state.dart';
+import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/home/presentation/bloc/home_bloc.dart';
 import 'features/notifications/presentation/bloc/notifications_bloc.dart';
@@ -50,6 +54,9 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) => getIt<SettingsBloc>()..add(const SettingsEvent.loadSettings()),
+        ),
+        BlocProvider(
           create: (_) => getIt<AuthBloc>()..add(const AuthEvent.checkAuthStatus()),
         ),
         BlocProvider(
@@ -59,25 +66,29 @@ class MyApp extends StatelessWidget {
           create: (_) => getIt<NotificationsBloc>()..add(const NotificationsEvent.fetchUnreadCount()),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'Home Maintenance',
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.light,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF003882)),
-          textTheme: GoogleFonts.tajawalTextTheme(),
-          useMaterial3: true,
-        ),
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('ar', 'AE'), // Arabic
-        ],
-        locale: const Locale('ar', 'AE'),
-        routerConfig: appRouter,
+      child: BlocBuilder<SettingsBloc, SettingsState>(
+        builder: (context, settingsState) {
+          final lang = settingsState.locale.languageCode;
+          return MaterialApp.router(
+            title: 'Home Maintenance',
+            debugShowCheckedModeBanner: false,
+            themeMode: settingsState.themeMode,
+            theme: AppTheme.light(lang),
+            darkTheme: AppTheme.dark(lang),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('ar', 'AE'), // Arabic
+              Locale('en', 'US'), // English
+            ],
+            locale: settingsState.locale,
+            routerConfig: appRouter,
+          );
+        },
       ),
     );
   }

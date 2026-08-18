@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/notifications_bloc.dart';
 import '../bloc/notifications_event.dart';
 import '../bloc/notifications_state.dart';
@@ -52,27 +54,34 @@ class _NotificationsView extends StatelessWidget {
         final currentFilter = state.currentFilter;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: AppColors.background(context),
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: AppColors.surface(context),
             elevation: 0.5,
             centerTitle: true,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0xFF1E293B), size: 20),
+              icon: Icon(
+                context.isRtl ? Icons.arrow_back_ios_new_rounded : Icons.arrow_back_rounded,
+                color: AppColors.textPrimary(context),
+                size: 20,
+              ),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: const Text(
-              'الإشعارات والتنبيهات',
+            title: Text(
+              context.tr('notifications_title'),
               style: TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF003882),
+                color: AppColors.primary(context),
               ),
             ),
             actions: [
               if (state.unreadCount > 0)
                 Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: EdgeInsets.only(
+                    left: context.isRtl ? 8.0 : 0,
+                    right: context.isRtl ? 0 : 8.0,
+                  ),
                   child: TextButton.icon(
                     onPressed: state.isMarkingAllRead
                         ? null
@@ -87,17 +96,17 @@ class _NotificationsView extends StatelessWidget {
                             height: 14,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
-                        : const Icon(
+                        : Icon(
                             Icons.done_all_rounded,
                             size: 17,
-                            color: Color(0xFF003882),
+                            color: AppColors.primary(context),
                           ),
-                    label: const Text(
-                      'قراءة الكل',
+                    label: Text(
+                      context.tr('mark_all_read'),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF003882),
+                        color: AppColors.primary(context),
                       ),
                     ),
                   ),
@@ -109,7 +118,7 @@ class _NotificationsView extends StatelessWidget {
               // Filter Chips Bar
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                color: Colors.white,
+                color: AppColors.surface(context),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
@@ -117,7 +126,7 @@ class _NotificationsView extends StatelessWidget {
                     children: [
                       _buildFilterChip(
                         context: context,
-                        label: 'الكل',
+                        label: context.tr('all'),
                         isSelected: currentFilter == null || currentFilter.isEmpty,
                         onTap: () {
                           context
@@ -128,7 +137,7 @@ class _NotificationsView extends StatelessWidget {
                       const SizedBox(width: 8),
                       _buildFilterChip(
                         context: context,
-                        label: 'غير المقروءة',
+                        label: context.tr('unread'),
                         badgeCount: state.unreadCount > 0 ? state.unreadCount : null,
                         isSelected: currentFilter == 'unread',
                         onTap: () {
@@ -172,8 +181,9 @@ class _NotificationsView extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 7.0),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF003882) : const Color(0xFFF1F5F9),
+          color: isSelected ? const Color(0xFF003882) : AppColors.inputFill(context),
           borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(color: isSelected ? Colors.transparent : AppColors.border(context)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -183,7 +193,7 @@ class _NotificationsView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                color: isSelected ? Colors.white : const Color(0xFF64748B),
+                color: isSelected ? Colors.white : AppColors.textSecondary(context),
               ),
             ),
             if (badgeCount != null) ...[
@@ -212,12 +222,14 @@ class _NotificationsView extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, NotificationsState state) {
     if (state.isLoading && state.notifications.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF003882)),
+      return Center(
+        child: CircularProgressIndicator(color: AppColors.primary(context)),
       );
     }
 
     if (state.notifications.isEmpty) {
+      final isDark = AppColors.isDark(context);
+
       return ListView(
         physics: const AlwaysScrollableScrollPhysics(),
         children: [
@@ -228,32 +240,32 @@ class _NotificationsView extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(22),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFEEF2FF),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.notifications_off_outlined,
                     size: 46,
-                    color: Color(0xFF003882),
+                    color: AppColors.primary(context),
                   ),
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'لا توجد إشعارات حالياً',
+                Text(
+                  context.tr('no_notifications'),
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Text(
-                  'ستصلك هنا كافة التنبيهات المتعلقة بطلبات الصيانة والمحفظة',
+                Text(
+                  context.tr('no_notifications_desc'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
-                    color: Color(0xFF64748B),
+                    color: AppColors.textSecondary(context),
                   ),
                 ),
               ],

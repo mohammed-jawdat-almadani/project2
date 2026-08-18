@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/authenticated_image.dart';
 import '../../domain/entities/order_item.dart';
 import 'order_details_sheet.dart';
@@ -28,6 +30,9 @@ class OrderCard extends StatelessWidget {
       case 'approved':
         return const Color(0xFF16A34A);
       case 'pending':
+      case 'parts_waiting':
+      case 'quote_pending':
+      case 'quote_rejected':
         return const Color(0xFFD97706);
       case 'completed':
       case 'closed':
@@ -35,13 +40,15 @@ class OrderCard extends StatelessWidget {
       case 'expired':
         return const Color(0xFF64748B);
       case 'cancelled':
+      case 'disputed':
         return const Color(0xFFDC2626);
       default:
         return const Color(0xFF003882);
     }
   }
 
-  Color _getStatusBgColor(String status) {
+  Color _getStatusBgColor(BuildContext context, String status) {
+    final isDark = AppColors.isDark(context);
     switch (status.toLowerCase()) {
       case 'accepted':
       case 'assigned':
@@ -49,47 +56,51 @@ class OrderCard extends StatelessWidget {
       case 'in_progress':
       case 'quoted':
       case 'approved':
-        return const Color(0xFFDCFCE7);
+        return isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7);
       case 'pending':
-        return const Color(0xFFFEF3C7);
+      case 'parts_waiting':
+      case 'quote_pending':
+      case 'quote_rejected':
+        return isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7);
       case 'completed':
       case 'closed':
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
       case 'expired':
-        return const Color(0xFFF1F5F9);
+        return AppColors.inputFill(context);
       case 'cancelled':
-        return const Color(0xFFFEE2E2);
+      case 'disputed':
+        return isDark ? const Color(0xFF7F1D1D).withValues(alpha: 0.3) : const Color(0xFFFEE2E2);
       default:
-        return const Color(0xFFEEF2FF);
+        return isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF);
     }
   }
 
-  String _getStatusLabel(String status) {
+  String _getStatusLabel(BuildContext context, String status) {
     switch (status.toLowerCase()) {
       case 'accepted':
       case 'assigned':
-        return 'مقبول / قيد التنفيذ 🛠️';
+        return context.tr('order_accepted_header');
       case 'arrived':
-        return 'تم الوصول للموقع 📍';
+        return context.tr('arrived_header');
       case 'in_progress':
-        return 'العمل جاري ⚙️';
+        return context.tr('in_progress_header');
+      case 'quote_pending':
       case 'quoted':
-        return 'تم إرسال عرض السعر 💵';
+        return context.tr('quote_pending_header');
+      case 'quote_rejected':
+        return context.tr('quote_rejected_header');
       case 'approved':
         return 'تمت الموافقة على السعر ✅';
       case 'parts_waiting':
-        return 'بانتظار قطعة غيار ⏳';
+        return context.tr('parts_waiting_header');
+      case 'closure_pending':
       case 'closure_requested':
-        return 'بانتظار الإغلاق 🔒';
-      case 'pending':
-        return 'قيد الانتظار ⏳';
+        return context.tr('closure_pending_header');
       case 'completed':
       case 'closed':
-        return 'مكتمل ✅';
-      case 'expired':
-        return 'منتهي ⚪';
-      case 'cancelled':
-        return 'ملغي 🔴';
+        return context.tr('completed_header');
+      case 'disputed':
+        return context.tr('dispute_header');
       default:
         return status;
     }
@@ -103,8 +114,11 @@ class OrderCard extends StatelessWidget {
       'in_progress',
       'quoted',
       'approved',
+      'quote_pending',
       'parts_waiting',
+      'closure_pending',
       'closure_requested',
+      'disputed',
     };
     return active.contains(status.toLowerCase());
   }
@@ -112,22 +126,25 @@ class OrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColor = _getStatusColor(order.status);
-    final statusBgColor = _getStatusBgColor(order.status);
-    final statusLabel = _getStatusLabel(order.status);
+    final statusBgColor = _getStatusBgColor(context, order.status);
+    final statusLabel = _getStatusLabel(context, order.status);
     final isActiveOrder = _isActive(order.status);
+    final isDark = AppColors.isDark(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 7.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color: isActiveOrder ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
+          color: isActiveOrder
+              ? (isDark ? const Color(0xFF1E40AF) : const Color(0xFFBFDBFE))
+              : AppColors.border(context),
           width: isActiveOrder ? 1.4 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isActiveOrder ? 0.05 : 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : (isActiveOrder ? 0.05 : 0.02)),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -160,15 +177,17 @@ class OrderCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF003882).withValues(alpha: 0.08),
+                            color: isDark
+                                ? const Color(0xFF38BDF8).withValues(alpha: 0.12)
+                                : const Color(0xFF003882).withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            'طلب #${order.id}',
-                            style: const TextStyle(
+                            '${context.tr('order_no')}${order.id}',
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF003882),
+                              color: AppColors.primary(context),
                             ),
                           ),
                         ),
@@ -177,12 +196,12 @@ class OrderCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEE2E2),
+                              color: isDark ? const Color(0xFF991B1B).withValues(alpha: 0.3) : const Color(0xFFFEE2E2),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: const Text(
-                              'طارئ ⚡',
-                              style: TextStyle(
+                            child: Text(
+                              context.tr('urgent'),
+                              style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFFDC2626),
@@ -214,19 +233,19 @@ class OrderCard extends StatelessWidget {
                 // Service & Description
                 Text(
                   order.serviceCategoryName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
                 if (order.description != null && order.description!.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
                     order.description!,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF475569),
+                      color: AppColors.textSecondary(context),
                       height: 1.35,
                     ),
                     maxLines: 2,
@@ -257,20 +276,20 @@ class OrderCard extends StatelessWidget {
                 ],
 
                 const SizedBox(height: 12),
-                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                Divider(height: 1, color: AppColors.border(context)),
                 const SizedBox(height: 10),
 
                 // Location, Date & Inspection Fee
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 15, color: Color(0xFF64748B)),
+                    Icon(Icons.location_on_outlined, size: 15, color: AppColors.textSecondary(context)),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        order.address?.label ?? 'موقع العميل',
-                        style: const TextStyle(
+                        order.address?.label ?? context.tr('address'),
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: AppColors.textSecondary(context),
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -278,9 +297,9 @@ class OrderCard extends StatelessWidget {
                     if (order.createdAt != null) ...[
                       Text(
                         _formatDate(order.createdAt),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF94A3B8),
+                          color: AppColors.textMuted(context),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -288,7 +307,7 @@ class OrderCard extends StatelessWidget {
                     ],
                     if (order.inspectionFee != null) ...[
                       Text(
-                        'كشف: ${order.inspectionFee} ل.س',
+                        '${context.tr('inspection_fee')}: ${order.inspectionFee} ${context.tr('currency')}',
                         style: const TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
@@ -314,7 +333,7 @@ class OrderCard extends StatelessWidget {
                             );
                           },
                           icon: const Icon(Icons.chat_bubble_rounded, size: 16),
-                          label: const Text('محادثة مع العميل'),
+                          label: Text(context.tr('chat_with_client')),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF003882),
                             foregroundColor: Colors.white,
@@ -341,11 +360,11 @@ class OrderCard extends StatelessWidget {
                           );
                         },
                         icon: const Icon(Icons.info_outline_rounded, size: 16),
-                        label: const Text('عرض التفاصيل'),
+                        label: Text(context.tr('details')),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF003882),
+                          foregroundColor: AppColors.primary(context),
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          side: const BorderSide(color: Color(0xFFCBD5E1)),
+                          side: BorderSide(color: AppColors.border(context)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

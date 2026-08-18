@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/sham_cash_account.dart';
 
 class ShamCashCard extends StatelessWidget {
@@ -22,19 +24,22 @@ class ShamCashCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isLinked = account != null;
+    final isDark = AppColors.isDark(context);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(24.0),
         border: Border.all(
-          color: isLinked ? const Color(0xFFBFDBFE) : const Color(0xFFE2E8F0),
+          color: isLinked
+              ? (isDark ? const Color(0xFF1E40AF) : const Color(0xFFBFDBFE))
+              : AppColors.border(context),
           width: isLinked ? 1.5 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isLinked ? 0.04 : 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : (isLinked ? 0.04 : 0.02)),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -52,6 +57,8 @@ class ShamCashCard extends StatelessWidget {
   }
 
   Widget _buildUnlinkedView(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -59,8 +66,8 @@ class ShamCashCard extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFEF3C7),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -70,24 +77,24 @@ class ShamCashCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'حساب شام كاش (غير مرتبط)',
+                    context.tr('sham_cash_unlinked'),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'يرجى ربط حسابك لاستقبال مبالغ السحب',
+                    context.tr('sham_cash_unlinked_desc'),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF64748B),
+                      color: AppColors.textSecondary(context),
                     ),
                   ),
                 ],
@@ -101,7 +108,7 @@ class ShamCashCard extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onLinkOrEdit,
             icon: const Icon(Icons.add_link_rounded, size: 18),
-            label: const Text('ربط حساب شام كاش الآن'),
+            label: Text(context.tr('link_account')),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF003882),
               foregroundColor: Colors.white,
@@ -118,6 +125,8 @@ class ShamCashCard extends StatelessWidget {
   }
 
   Widget _buildLinkedView(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,8 +137,8 @@ class ShamCashCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFFDCFCE7),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -139,12 +148,12 @@ class ShamCashCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Text(
-                  'حساب شام كاش المعتمد',
+                Text(
+                  context.tr('sham_cash_linked'),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                    color: AppColors.textPrimary(context),
                   ),
                 ),
               ],
@@ -152,11 +161,11 @@ class ShamCashCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFFDCFCE7),
+                color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Text(
-                'مرتبط ونشط 🟢',
+                'مرتبط 🟢',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
@@ -174,9 +183,9 @@ class ShamCashCard extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8FAFC),
+            color: AppColors.inputFill(context),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: AppColors.border(context)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,16 +193,16 @@ class ShamCashCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'الاسم الثلاثي:',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                  Text(
+                    '${context.tr('full_name')}:',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
                   ),
                   Text(
                     account!.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                 ],
@@ -202,18 +211,18 @@ class ShamCashCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'رقم / معرف الحساب:',
-                    style: TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                  Text(
+                    '${context.tr('account_number')}:',
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context)),
                   ),
                   Directionality(
                     textDirection: TextDirection.ltr,
                     child: Text(
                       _formatMaskedNumber(account!.number),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF003882),
+                        color: AppColors.primary(context),
                         letterSpacing: 1.0,
                       ),
                     ),
@@ -228,16 +237,16 @@ class ShamCashCard extends StatelessWidget {
 
         // Edit Account Button
         Align(
-          alignment: Alignment.centerLeft,
+          alignment: context.isRtl ? Alignment.centerLeft : Alignment.centerRight,
           child: TextButton.icon(
             onPressed: onLinkOrEdit,
-            icon: const Icon(Icons.edit_outlined, size: 16, color: Color(0xFF003882)),
-            label: const Text(
-              'تعديل بيانات الحساب',
+            icon: Icon(Icons.edit_outlined, size: 16, color: AppColors.primary(context)),
+            label: Text(
+              context.tr('edit_account'),
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF003882),
+                color: AppColors.primary(context),
               ),
             ),
           ),

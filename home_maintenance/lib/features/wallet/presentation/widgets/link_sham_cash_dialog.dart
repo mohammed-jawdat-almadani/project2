@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/sham_cash_account.dart';
 import '../bloc/wallet_bloc.dart';
 import '../bloc/wallet_event.dart';
@@ -51,10 +53,11 @@ class _LinkShamCashDialogState extends State<LinkShamCashDialog> {
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.initialAccount != null;
+    final isDark = AppColors.isDark(context);
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface(context),
       child: Padding(
         padding: const EdgeInsets.all(22.0),
         child: Form(
@@ -68,66 +71,69 @@ class _LinkShamCashDialogState extends State<LinkShamCashDialog> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFEEF2FF),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.credit_card_rounded,
-                      color: Color(0xFF003882),
+                      color: AppColors.primary(context),
                       size: 24,
                     ),
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    isEditing ? 'تعديل حساب شام كاش' : 'ربط حساب شام كاش',
-                    style: const TextStyle(
+                    isEditing ? context.tr('edit_account') : context.tr('link_account'),
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: AppColors.textPrimary(context),
                     ),
                   ),
                 ],
               ),
 
               const SizedBox(height: 16),
-              const Text(
-                'أدخل بيانات حسابك في شام كاش بدقة ليتم تحويل مبالغ السحب إليه مباشرة:',
-                style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+              Text(
+                context.isArabic
+                    ? 'أدخل بيانات حسابك في شام كاش بدقة ليتم تحويل مبالغ السحب إليه مباشرة:'
+                    : 'Enter your Sham Cash details accurately for direct withdrawal transfers:',
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondary(context), height: 1.4),
               ),
               const SizedBox(height: 16),
 
               // Name Field
-              const Text(
-                'الاسم الثلاثي المعتمد في الحساب',
+              Text(
+                context.tr('full_name'),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF334155),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _nameController,
+                style: TextStyle(color: AppColors.textPrimary(context)),
                 decoration: InputDecoration(
-                  hintText: 'مثال: محمد أحمد المهندس',
-                  hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                  prefixIcon: const Icon(Icons.person_outline_rounded, size: 20, color: Color(0xFF64748B)),
+                  hintText: context.isArabic ? 'مثال: محمد أحمد المهندس' : 'e.g. John Doe',
+                  hintStyle: TextStyle(fontSize: 13, color: AppColors.textMuted(context)),
+                  prefixIcon: Icon(Icons.person_outline_rounded, size: 20, color: AppColors.textSecondary(context)),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: AppColors.inputFill(context),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
-                    return 'يرجى إدخال الاسم الثلاثي';
+                    return context.tr('required_field');
                   }
                   return null;
                 },
@@ -136,37 +142,38 @@ class _LinkShamCashDialogState extends State<LinkShamCashDialog> {
               const SizedBox(height: 14),
 
               // Account Number Field
-              const Text(
-                'رقم الحساب / المعرف',
+              Text(
+                context.tr('account_number'),
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF334155),
+                  color: AppColors.textPrimary(context),
                 ),
               ),
               const SizedBox(height: 6),
               TextFormField(
                 controller: _numberController,
                 keyboardType: TextInputType.number,
+                style: TextStyle(color: AppColors.textPrimary(context)),
                 decoration: InputDecoration(
-                  hintText: 'مثال: 1234567890123456',
-                  hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF94A3B8)),
-                  prefixIcon: const Icon(Icons.tag_rounded, size: 20, color: Color(0xFF64748B)),
+                  hintText: '1234567890123456',
+                  hintStyle: TextStyle(fontSize: 13, color: AppColors.textMuted(context)),
+                  prefixIcon: Icon(Icons.tag_rounded, size: 20, color: AppColors.textSecondary(context)),
                   filled: true,
-                  fillColor: const Color(0xFFF8FAFC),
+                  fillColor: AppColors.inputFill(context),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    borderSide: BorderSide(color: AppColors.border(context)),
                   ),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
-                    return 'يرجى إدخال رقم أو معرف الحساب';
+                    return context.tr('required_field');
                   }
                   return null;
                 },
@@ -181,12 +188,14 @@ class _LinkShamCashDialogState extends State<LinkShamCashDialog> {
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary(context),
+                        side: BorderSide(color: AppColors.border(context)),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text('إلغاء', style: TextStyle(color: Color(0xFF64748B))),
+                      child: Text(context.tr('cancel')),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -201,7 +210,7 @@ class _LinkShamCashDialogState extends State<LinkShamCashDialog> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: Text(isEditing ? 'حفظ التعديلات' : 'ربط الحساب'),
+                      child: Text(context.tr('save')),
                     ),
                   ),
                 ],

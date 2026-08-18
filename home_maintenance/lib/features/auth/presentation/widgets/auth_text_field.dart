@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class AuthTextField extends StatelessWidget {
   final String label;
@@ -22,7 +24,8 @@ class AuthTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final borderColor = errorText != null ? Colors.red : const Color(0xFFC3C6D4);
+    final isDark = AppColors.isDark(context);
+    final borderColor = errorText != null ? Colors.red : AppColors.border(context);
     final isError = errorText != null;
 
     if (isPhone) {
@@ -32,7 +35,7 @@ class AuthTextField extends StatelessWidget {
           Container(
             height: 56,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.surface(context),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderColor),
             ),
@@ -43,50 +46,48 @@ class AuthTextField extends StatelessWidget {
                   Container(
                     width: 88,
                     decoration: BoxDecoration(
-                      color: const Color(0x5CE1E2EC), // 0.36 opacity
+                      color: isDark ? const Color(0xFF1E293B) : const Color(0x5CE1E2EC),
                       borderRadius: const BorderRadius.horizontal(left: Radius.circular(11)),
                       border: isError ? const Border(right: BorderSide(color: Colors.red)) : null,
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           '+963',
                           style: TextStyle(
-                            color: Color(0xFF434652),
+                            color: AppColors.textPrimary(context),
                             fontWeight: FontWeight.w700,
                             fontSize: 14,
                             letterSpacing: 0.7,
                           ),
                           textDirection: TextDirection.ltr,
                         ),
-                        SizedBox(width: 8),
-                        Icon(Icons.language, color: Color(0xFF434652), size: 16),
+                        const SizedBox(width: 8),
+                        Icon(Icons.language, color: AppColors.textSecondary(context), size: 16),
                       ],
                     ),
                   ),
                   Container(
                     width: 1,
                     height: 32,
-                    color: isError ? Colors.red : const Color(0xFFC3C6D4),
+                    color: isError ? Colors.red : AppColors.border(context),
                   ),
                   Expanded(
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: TextFormField(
-                        controller: controller,
-                        keyboardType: TextInputType.phone,
-                        textAlign: TextAlign.right,
-                        onChanged: onChanged,
-                        decoration: InputDecoration(
-                          hintText: hint,
-                          hintStyle: const TextStyle(
-                            color: Color(0xFF747784),
-                            fontSize: 14,
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      controller: controller,
+                      keyboardType: TextInputType.phone,
+                      textAlign: context.isRtl ? TextAlign.right : TextAlign.left,
+                      style: TextStyle(color: AppColors.textPrimary(context)),
+                      onChanged: onChanged,
+                      decoration: InputDecoration(
+                        hintText: hint,
+                        hintStyle: TextStyle(
+                          color: AppColors.textMuted(context),
+                          fontSize: 14,
                         ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
                     ),
                   ),
@@ -109,35 +110,39 @@ class AuthTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Color(0xFF191C1E),
+        if (label.isNotEmpty) ...[
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              color: AppColors.textPrimary(context),
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
+          const SizedBox(height: 10),
+        ],
         Container(
           height: 56,
           decoration: BoxDecoration(
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: borderColor),
           ),
           child: TextFormField(
             controller: controller,
             obscureText: isPassword,
-            textAlign: TextAlign.right,
+            textAlign: context.isRtl ? TextAlign.right : TextAlign.left,
+            style: TextStyle(color: AppColors.textPrimary(context)),
             onChanged: onChanged,
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: const TextStyle(
-                color: Color(0xFF6B7280),
+              hintStyle: TextStyle(
+                color: AppColors.textMuted(context),
                 fontSize: 14,
               ),
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              suffixIcon: isPassword ? const Icon(Icons.visibility_off, color: Color(0xFF43474E), size: 22) : null,
+              suffixIcon: isPassword ? Icon(Icons.visibility_off, color: AppColors.textSecondary(context), size: 22) : null,
             ),
           ),
         ),

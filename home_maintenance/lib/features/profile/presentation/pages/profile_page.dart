@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/settings/presentation/bloc/settings_bloc.dart';
+import '../../../../core/settings/presentation/bloc/settings_event.dart';
+import '../../../../core/settings/presentation/bloc/settings_state.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/profile_bloc.dart';
 import '../bloc/profile_event.dart';
 import '../bloc/profile_state.dart';
@@ -21,29 +26,284 @@ class ProfilePage extends StatelessWidget {
 class _ProfileView extends StatelessWidget {
   const _ProfileView();
 
+  void _showLanguageSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border(context),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              context.tr('language'),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary(context),
+              ),
+            ),
+            const SizedBox(height: 16),
+            BlocBuilder<SettingsBloc, SettingsState>(
+              builder: (context, state) {
+                final currentLang = state.locale.languageCode;
+                return Column(
+                  children: [
+                    _buildLanguageOption(
+                      context,
+                      title: 'العربية (Arabic)',
+                      flag: '🇸🇦',
+                      isSelected: currentLang == 'ar',
+                      onTap: () {
+                        context.read<SettingsBloc>().add(
+                              const SettingsEvent.changeLanguage('ar'),
+                            );
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildLanguageOption(
+                      context,
+                      title: 'English (الإنجليزية)',
+                      flag: '🇬🇧',
+                      isSelected: currentLang == 'en',
+                      onTap: () {
+                        context.read<SettingsBloc>().add(
+                              const SettingsEvent.changeLanguage('en'),
+                            );
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageOption(
+    BuildContext context, {
+    required String title,
+    required String flag,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF003882).withValues(alpha: 0.08)
+              : AppColors.inputFill(context),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF003882) : AppColors.border(context),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 22)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? const Color(0xFF003882) : AppColors.textPrimary(context),
+                ),
+              ),
+            ),
+            if (isSelected)
+              const Icon(Icons.check_circle_rounded, color: Color(0xFF003882), size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showThemeSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border(context),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            Text(
+              context.tr('theme_mode'),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary(context),
+              ),
+            ),
+            const SizedBox(height: 16),
+            BlocBuilder<SettingsBloc, SettingsState>(
+              builder: (context, state) {
+                final currentMode = state.themeMode;
+                return Column(
+                  children: [
+                    _buildThemeOption(
+                      context,
+                      title: context.tr('theme_light'),
+                      icon: Icons.wb_sunny_rounded,
+                      iconColor: const Color(0xFFD97706),
+                      isSelected: currentMode == ThemeMode.light,
+                      onTap: () {
+                        context.read<SettingsBloc>().add(
+                              const SettingsEvent.changeThemeMode(ThemeMode.light),
+                            );
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildThemeOption(
+                      context,
+                      title: context.tr('theme_dark'),
+                      icon: Icons.nightlight_round,
+                      iconColor: const Color(0xFF6366F1),
+                      isSelected: currentMode == ThemeMode.dark,
+                      onTap: () {
+                        context.read<SettingsBloc>().add(
+                              const SettingsEvent.changeThemeMode(ThemeMode.dark),
+                            );
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildThemeOption(
+                      context,
+                      title: context.tr('theme_system'),
+                      icon: Icons.settings_brightness_rounded,
+                      iconColor: const Color(0xFF64748B),
+                      isSelected: currentMode == ThemeMode.system,
+                      onTap: () {
+                        context.read<SettingsBloc>().add(
+                              const SettingsEvent.changeThemeMode(ThemeMode.system),
+                            );
+                        Navigator.of(ctx).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeOption(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF003882).withValues(alpha: 0.08)
+              : AppColors.inputFill(context),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF003882) : AppColors.border(context),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: iconColor, size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? const Color(0xFF003882) : AppColors.textPrimary(context),
+                ),
+              ),
+            ),
+            if (isSelected)
+              const Icon(Icons.check_circle_rounded, color: Color(0xFF003882), size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.logout_rounded, color: Color(0xFFDC2626), size: 24),
-            SizedBox(width: 10),
+            const Icon(Icons.logout_rounded, color: Color(0xFFDC2626), size: 24),
+            const SizedBox(width: 10),
             Text(
-              'تسجيل الخروج',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              context.tr('logout'),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ],
         ),
-        content: const Text(
-          'هل أنت متأكد من رغبتك في تسجيل الخروج من حساب الفني؟',
-          style: TextStyle(fontSize: 14, color: Color(0xFF475569)),
+        content: Text(
+          context.tr('logout_confirm_desc'),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF475569)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('إلغاء', style: TextStyle(color: Color(0xFF64748B))),
+            child: Text(context.tr('cancel'), style: const TextStyle(color: Color(0xFF64748B))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -56,7 +316,7 @@ class _ProfileView extends StatelessWidget {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               elevation: 0,
             ),
-            child: const Text('نعم، تسجيل الخروج', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: Text(context.tr('logout'), style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -69,9 +329,9 @@ class _ProfileView extends StatelessWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         ),
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -432,11 +692,65 @@ class _ProfileView extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
+                          // Language Selector Tile
+                          BlocBuilder<SettingsBloc, SettingsState>(
+                            builder: (context, settingsState) {
+                              final isAr = settingsState.locale.languageCode == 'ar';
+                              return _buildSettingTile(
+                                icon: Icons.language_rounded,
+                                iconColor: const Color(0xFF0D9488),
+                                title: context.tr('language'),
+                                subtitle: isAr ? 'العربية (Arabic)' : 'English',
+                                onTap: () => _showLanguageSheet(context),
+                                trailing: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    isAr ? '🇸🇦 AR' : '🇬🇧 EN',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      color: Color(0xFF0D9488),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+
+                          // Theme Mode Selector Tile
+                          BlocBuilder<SettingsBloc, SettingsState>(
+                            builder: (context, settingsState) {
+                              String themeName = context.tr('theme_light');
+                              IconData themeIcon = Icons.wb_sunny_rounded;
+                              if (settingsState.themeMode == ThemeMode.dark) {
+                                themeName = context.tr('theme_dark');
+                                themeIcon = Icons.nightlight_round;
+                              } else if (settingsState.themeMode == ThemeMode.system) {
+                                themeName = context.tr('theme_system');
+                                themeIcon = Icons.settings_brightness_rounded;
+                              }
+
+                              return _buildSettingTile(
+                                icon: themeIcon,
+                                iconColor: const Color(0xFFD97706),
+                                title: context.tr('theme_mode'),
+                                subtitle: themeName,
+                                onTap: () => _showThemeSheet(context),
+                              );
+                            },
+                          ),
+                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+
                           // Push Notifications Toggle
                           _buildSettingTile(
                             icon: Icons.notifications_active_outlined,
                             iconColor: const Color(0xFF003882),
-                            title: 'التنبيهات الفورية',
+                            title: context.tr('notifications_setting'),
                             subtitle: 'استقبال الإشعارات عند وصول عروض الصيانة',
                             trailing: Switch(
                               value: state.pushNotificationsEnabled,
@@ -455,7 +769,7 @@ class _ProfileView extends StatelessWidget {
                           _buildSettingTile(
                             icon: Icons.storefront_rounded,
                             iconColor: const Color(0xFF0284C7),
-                            title: 'مكاتب وفروع الخدمة',
+                            title: context.tr('select_office'),
                             subtitle: 'عرض عناوين مكاتب الدعم والتفعيل المعتمدة',
                             onTap: () {
                               context.push('/activation');
@@ -477,7 +791,7 @@ class _ProfileView extends StatelessWidget {
                           _buildSettingTile(
                             icon: Icons.logout_rounded,
                             iconColor: const Color(0xFFDC2626),
-                            title: 'تسجيل الخروج',
+                            title: context.tr('logout'),
                             subtitle: 'الخروج الآمن من الحساب',
                             textColor: const Color(0xFFDC2626),
                             onTap: state.isLoggingOut ? null : () => _showLogoutDialog(context),
