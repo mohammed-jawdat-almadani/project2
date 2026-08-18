@@ -24,4 +24,6 @@ abstract class AuthRepository {
   Future<Either<Failure, void>> forgotPassword({required String phone});
   Future<Either<Failure, SplashAuthState>> checkAuthStatus();
   Future<Either<Failure, List<Office>>> getOffices();
+  Future<Either<Failure, void>> registerDeviceToken({required String token, String platform = 'android'});
+  Future<Either<Failure, void>> deleteDeviceToken({required String token});
 }

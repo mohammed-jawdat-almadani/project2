@@ -165,4 +165,31 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure('حدث خطأ غير متوقع'));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> registerDeviceToken({
+    required String token,
+    String platform = 'android',
+  }) async {
+    try {
+      await _remoteDataSource.registerDeviceToken(token: token, platform: platform);
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.response?.data['message'] ?? 'فشل في تسجيل توكن الإشعارات'));
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ غير متوقع'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteDeviceToken({required String token}) async {
+    try {
+      await _remoteDataSource.deleteDeviceToken(token: token);
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.response?.data['message'] ?? 'فشل في إلغاء توكن الإشعارات'));
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ غير متوقع'));
+    }
+  }
 }

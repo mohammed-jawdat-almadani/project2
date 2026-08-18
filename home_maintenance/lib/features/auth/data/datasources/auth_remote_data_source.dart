@@ -27,6 +27,8 @@ abstract class AuthRemoteDataSource {
   Future<String?> getUserRole();
   Future<Map<String, dynamic>> getTechnicianProfile();
   Future<List<OfficeModel>> getOffices();
+  Future<void> registerDeviceToken({required String token, String platform = 'android'});
+  Future<void> deleteDeviceToken({required String token});
 }
 
 @LazySingleton(as: AuthRemoteDataSource)
@@ -228,6 +230,39 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final List<dynamic> data = response.data['data'] as List<dynamic>;
       return data.map((json) => OfficeModel.fromJson(json as Map<String, dynamic>)).toList();
     } else {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
+  }
+
+  @override
+  Future<void> registerDeviceToken({required String token, String platform = 'android'}) async {
+    final response = await _dio.post(
+      '/api/device-tokens',
+      data: {
+        'token': token,
+        'platform': platform,
+      },
+    );
+    if (response.statusCode != 200 && response.statusCode != 201 && response.statusCode != 204) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
+  }
+
+  @override
+  Future<void> deleteDeviceToken({required String token}) async {
+    final response = await _dio.delete(
+      '/api/device-tokens',
+      data: {
+        'token': token,
+      },
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
       throw DioException(
         requestOptions: response.requestOptions,
         response: response,
