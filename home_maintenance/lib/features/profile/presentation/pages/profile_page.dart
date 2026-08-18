@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -108,6 +109,8 @@ class _ProfileView extends StatelessWidget {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final isDark = AppColors.isDark(context);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -115,11 +118,11 @@ class _ProfileView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF003882).withValues(alpha: 0.08)
+              ? (isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.15) : const Color(0xFF003882).withValues(alpha: 0.08))
               : AppColors.inputFill(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF003882) : AppColors.border(context),
+            color: isSelected ? AppColors.primary(context) : AppColors.border(context),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -133,12 +136,12 @@ class _ProfileView extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? const Color(0xFF003882) : AppColors.textPrimary(context),
+                  color: isSelected ? AppColors.primary(context) : AppColors.textPrimary(context),
                 ),
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle_rounded, color: Color(0xFF003882), size: 20),
+              Icon(Icons.check_circle_rounded, color: AppColors.primary(context), size: 20),
           ],
         ),
       ),
@@ -244,6 +247,8 @@ class _ProfileView extends StatelessWidget {
     required bool isSelected,
     required VoidCallback onTap,
   }) {
+    final isDark = AppColors.isDark(context);
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -251,11 +256,11 @@ class _ProfileView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF003882).withValues(alpha: 0.08)
+              ? (isDark ? const Color(0xFF38BDF8).withValues(alpha: 0.15) : const Color(0xFF003882).withValues(alpha: 0.08))
               : AppColors.inputFill(context),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF003882) : AppColors.border(context),
+            color: isSelected ? AppColors.primary(context) : AppColors.border(context),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -269,12 +274,12 @@ class _ProfileView extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                  color: isSelected ? const Color(0xFF003882) : AppColors.textPrimary(context),
+                  color: isSelected ? AppColors.primary(context) : AppColors.textPrimary(context),
                 ),
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle_rounded, color: Color(0xFF003882), size: 20),
+              Icon(Icons.check_circle_rounded, color: AppColors.primary(context), size: 20),
           ],
         ),
       ),
@@ -285,6 +290,7 @@ class _ProfileView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface(context),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
@@ -292,18 +298,18 @@ class _ProfileView extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               context.tr('logout'),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textPrimary(context)),
             ),
           ],
         ),
         content: Text(
           context.tr('logout_confirm_desc'),
-          style: const TextStyle(fontSize: 14, color: Color(0xFF475569)),
+          style: TextStyle(fontSize: 14, color: AppColors.textSecondary(context)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(context.tr('cancel'), style: const TextStyle(color: Color(0xFF64748B))),
+            child: Text(context.tr('cancel'), style: TextStyle(color: AppColors.textSecondary(context))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -344,19 +350,19 @@ class _ProfileView extends StatelessWidget {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: AppColors.border(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
-            const Text(
-              'الشروط وسياسة الخصوصية',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF003882)),
+            Text(
+              context.tr('terms_and_privacy'),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primary(context)),
             ),
             const SizedBox(height: 12),
-            const Text(
-              'تلتزم منصة الصيانة المنزلية بحماية خصوصية الفنيين والعملاء. تضمن المنصة سرية بيانات التواصل وتحديد الموقع فقط أثناء تفعيل حالة الاتصال لاستقبال طلبات الصيانة القريبة.\n\nيوافق الفني على الالتزام بتقديم خدمات الصيانة بأعلى معايير الجودة والأمانة المهنية وفق الأسعار المحددة.',
-              style: TextStyle(fontSize: 14, color: Color(0xFF475569), height: 1.6),
+            Text(
+              context.tr('terms_content'),
+              style: TextStyle(fontSize: 14, color: AppColors.textSecondary(context), height: 1.6),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -369,7 +375,7 @@ class _ProfileView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('حسناً، فهمت'),
+                child: Text(context.tr('i_understand')),
               ),
             ),
           ],
@@ -378,8 +384,65 @@ class _ProfileView extends StatelessWidget {
     );
   }
 
+  String _getDisplayName(BuildContext context, String? name) {
+    if (name != null &&
+        name.trim().isNotEmpty &&
+        name != 'فني الصيانة' &&
+        name != 'Maintenance Technician' &&
+        name != 'technician_info') {
+      return name.trim();
+    }
+    return context.isArabic ? 'محمد المعدني' : 'Mohammed';
+  }
+
+  Widget _buildAvatar(String? photoUrl, {required double size, required Color iconColor}) {
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
+        return Image.network(
+          photoUrl,
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+          errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size, iconColor),
+        );
+      } else if (photoUrl.startsWith('/') || photoUrl.contains(':\\') || photoUrl.contains(':/')) {
+        final file = File(photoUrl);
+        if (file.existsSync()) {
+          return Image.file(
+            file,
+            fit: BoxFit.cover,
+            width: size,
+            height: size,
+            errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size, iconColor),
+          );
+        }
+      } else {
+        return Image.network(
+          'https://home-maintenance.me/storage/$photoUrl',
+          fit: BoxFit.cover,
+          width: size,
+          height: size,
+          errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(size, iconColor),
+        );
+      }
+    }
+    return _buildFallbackIcon(size, iconColor);
+  }
+
+  Widget _buildFallbackIcon(double size, Color iconColor) {
+    return Center(
+      child: Icon(
+        Icons.person_rounded,
+        size: size * 0.6,
+        color: iconColor,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return BlocConsumer<ProfileBloc, ProfileState>(
       listenWhen: (previous, current) =>
           previous.loggedOutSuccess != current.loggedOutSuccess ||
@@ -410,9 +473,10 @@ class _ProfileView extends StatelessWidget {
       },
       builder: (context, state) {
         final profile = state.profile;
+        final isAvailable = profile?.isAvailable ?? false;
 
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
+          backgroundColor: AppColors.background(context),
           body: RefreshIndicator(
             color: const Color(0xFF003882),
             onRefresh: () async {
@@ -438,9 +502,9 @@ class _ProfileView extends StatelessWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              'الملف الشخصي',
-                              style: TextStyle(
+                            Text(
+                              context.tr('profile_title'),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -449,12 +513,12 @@ class _ProfileView extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: (profile?.isAvailable ?? false)
+                                color: isAvailable
                                     ? const Color(0xFF22C55E).withValues(alpha: 0.25)
                                     : Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: (profile?.isAvailable ?? false)
+                                  color: isAvailable
                                       ? const Color(0xFF86EFAC)
                                       : Colors.white24,
                                 ),
@@ -467,14 +531,14 @@ class _ProfileView extends StatelessWidget {
                                     height: 8,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: (profile?.isAvailable ?? false)
+                                      color: isAvailable
                                           ? const Color(0xFF22C55E)
                                           : const Color(0xFF94A3B8),
                                     ),
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    (profile?.isAvailable ?? false) ? 'متاح للعمل' : 'غير متاح',
+                                    isAvailable ? context.tr('status_online') : context.tr('status_offline'),
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
@@ -506,11 +570,11 @@ class _ProfileView extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  size: 40,
-                                  color: Color(0xFF003882),
+                              child: ClipOval(
+                                child: _buildAvatar(
+                                  profile?.profilePhotoUrl,
+                                  size: 68,
+                                  iconColor: const Color(0xFF003882),
                                 ),
                               ),
                             ),
@@ -522,7 +586,7 @@ class _ProfileView extends StatelessWidget {
                                   Row(
                                     children: [
                                       Text(
-                                        profile?.name ?? 'فني الصيانة',
+                                        _getDisplayName(context, profile?.name),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 18,
@@ -553,7 +617,7 @@ class _ProfileView extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
-                                      profile?.status == 'active' ? 'حساب معتمد ومفعل ✅' : 'قيد المراجعة ⏳',
+                                      profile?.status == 'active' ? context.tr('account_active') : context.tr('account_pending'),
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 11,
@@ -579,28 +643,31 @@ class _ProfileView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _buildStatCard(
-                            title: 'التقييم العام',
+                            context: context,
+                            title: context.tr('rating_overall'),
                             value: '⭐ ${profile?.ratingAvg ?? "0.00"}',
-                            color: const Color(0xFFFEF3C7),
-                            textColor: const Color(0xFFB45309),
+                            color: isDark ? const Color(0xFF78350F).withValues(alpha: 0.3) : const Color(0xFFFEF3C7),
+                            textColor: isDark ? const Color(0xFFFDE68A) : const Color(0xFFB45309),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: _buildStatCard(
-                            title: 'الطلبات المنجزة',
-                            value: '${profile?.completedOrdersCount ?? 0} طلب',
-                            color: const Color(0xFFDCFCE7),
-                            textColor: const Color(0xFF15803D),
+                            context: context,
+                            title: context.tr('completed_orders'),
+                            value: '${profile?.completedOrdersCount ?? 0} ${context.tr('order_unit')}',
+                            color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
+                            textColor: isDark ? const Color(0xFF6EE7B7) : const Color(0xFF15803D),
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: _buildStatCard(
-                            title: 'حالة الفني',
-                            value: profile?.status == 'active' ? 'نشط' : 'معلق',
-                            color: const Color(0xFFEEF2FF),
-                            textColor: const Color(0xFF003882),
+                            context: context,
+                            title: context.tr('technician_status'),
+                            value: profile?.status == 'active' ? context.tr('status_active') : context.tr('status_suspended'),
+                            color: isDark ? const Color(0xFF1E3A8A).withValues(alpha: 0.3) : const Color(0xFFEEF2FF),
+                            textColor: isDark ? const Color(0xFF38BDF8) : const Color(0xFF003882),
                           ),
                         ),
                       ],
@@ -616,16 +683,16 @@ class _ProfileView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Row(
+                          Row(
                             children: [
-                              Icon(Icons.category_rounded, size: 18, color: Color(0xFF003882)),
-                              SizedBox(width: 8),
+                              Icon(Icons.category_rounded, size: 18, color: AppColors.primary(context)),
+                              const SizedBox(width: 8),
                               Text(
-                                'المهن والتخصصات المسجلة',
+                                context.tr('registered_specialties'),
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1E293B),
+                                  color: AppColors.textPrimary(context),
                                 ),
                               ),
                             ],
@@ -638,12 +705,12 @@ class _ProfileView extends StatelessWidget {
                               return Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: AppColors.surface(context),
                                   borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFCBD5E1)),
+                                  border: Border.all(color: AppColors.border(context)),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.02),
+                                      color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.02),
                                       blurRadius: 4,
                                       offset: const Offset(0, 2),
                                     ),
@@ -652,14 +719,14 @@ class _ProfileView extends StatelessWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    const Icon(Icons.handyman_rounded, size: 14, color: Color(0xFF003882)),
+                                    Icon(Icons.handyman_rounded, size: 14, color: AppColors.primary(context)),
                                     const SizedBox(width: 6),
                                     Text(
                                       name,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF334155),
+                                        color: AppColors.textPrimary(context),
                                       ),
                                     ),
                                   ],
@@ -679,12 +746,12 @@ class _ProfileView extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(16, 14, 16, 32),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface(context),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        border: Border.all(color: AppColors.border(context)),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.03),
+                            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -697,6 +764,7 @@ class _ProfileView extends StatelessWidget {
                             builder: (context, settingsState) {
                               final isAr = settingsState.locale.languageCode == 'ar';
                               return _buildSettingTile(
+                                context: context,
                                 icon: Icons.language_rounded,
                                 iconColor: const Color(0xFF0D9488),
                                 title: context.tr('language'),
@@ -720,7 +788,7 @@ class _ProfileView extends StatelessWidget {
                               );
                             },
                           ),
-                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, indent: 60, color: AppColors.border(context)),
 
                           // Theme Mode Selector Tile
                           BlocBuilder<SettingsBloc, SettingsState>(
@@ -736,6 +804,7 @@ class _ProfileView extends StatelessWidget {
                               }
 
                               return _buildSettingTile(
+                                context: context,
                                 icon: themeIcon,
                                 iconColor: const Color(0xFFD97706),
                                 title: context.tr('theme_mode'),
@@ -744,14 +813,15 @@ class _ProfileView extends StatelessWidget {
                               );
                             },
                           ),
-                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, indent: 60, color: AppColors.border(context)),
 
                           // Push Notifications Toggle
                           _buildSettingTile(
+                            context: context,
                             icon: Icons.notifications_active_outlined,
                             iconColor: const Color(0xFF003882),
                             title: context.tr('notifications_setting'),
-                            subtitle: 'استقبال الإشعارات عند وصول عروض الصيانة',
+                            subtitle: context.tr('notifications_desc'),
                             trailing: Switch(
                               value: state.pushNotificationsEnabled,
                               onChanged: (val) {
@@ -763,36 +833,39 @@ class _ProfileView extends StatelessWidget {
                               activeThumbColor: Colors.white,
                             ),
                           ),
-                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, indent: 60, color: AppColors.border(context)),
 
                           // Service Offices
                           _buildSettingTile(
+                            context: context,
                             icon: Icons.storefront_rounded,
                             iconColor: const Color(0xFF0284C7),
                             title: context.tr('select_office'),
-                            subtitle: 'عرض عناوين مكاتب الدعم والتفعيل المعتمدة',
+                            subtitle: context.tr('offices_desc'),
                             onTap: () {
                               context.push('/activation');
                             },
                           ),
-                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, indent: 60, color: AppColors.border(context)),
 
                           // Terms & Privacy
                           _buildSettingTile(
+                            context: context,
                             icon: Icons.privacy_tip_outlined,
                             iconColor: const Color(0xFF7E22CE),
-                            title: 'الشروط وسياسة الخصوصية',
-                            subtitle: 'معلومات الاستخدام وشروط تقديم الخدمة',
+                            title: context.tr('terms_and_privacy'),
+                            subtitle: context.tr('terms_desc'),
                             onTap: () => _showTermsDialog(context),
                           ),
-                          const Divider(height: 1, indent: 60, color: Color(0xFFF1F5F9)),
+                          Divider(height: 1, indent: 60, color: AppColors.border(context)),
 
                           // Logout Button
                           _buildSettingTile(
+                            context: context,
                             icon: Icons.logout_rounded,
                             iconColor: const Color(0xFFDC2626),
                             title: context.tr('logout'),
-                            subtitle: 'الخروج الآمن من الحساب',
+                            subtitle: context.tr('logout_desc'),
                             textColor: const Color(0xFFDC2626),
                             onTap: state.isLoggingOut ? null : () => _showLogoutDialog(context),
                             trailing: state.isLoggingOut
@@ -801,7 +874,11 @@ class _ProfileView extends StatelessWidget {
                                     height: 20,
                                     child: CircularProgressIndicator(strokeWidth: 2),
                                   )
-                                : const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF94A3B8)),
+                                : Icon(
+                                    context.isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
+                                    size: 20,
+                                    color: AppColors.textMuted(context),
+                                  ),
                           ),
                         ],
                       ),
@@ -817,6 +894,7 @@ class _ProfileView extends StatelessWidget {
   }
 
   Widget _buildStatCard({
+    required BuildContext context,
     required String title,
     required String value,
     required Color color,
@@ -835,7 +913,7 @@ class _ProfileView extends StatelessWidget {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: textColor.withValues(alpha: 0.8),
+              color: textColor.withValues(alpha: 0.85),
             ),
           ),
           const SizedBox(height: 4),
@@ -853,6 +931,7 @@ class _ProfileView extends StatelessWidget {
   }
 
   Widget _buildSettingTile({
+    required BuildContext context,
     required IconData icon,
     required Color iconColor,
     required String title,
@@ -866,7 +945,7 @@ class _ProfileView extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: iconColor.withValues(alpha: 0.1),
+          color: iconColor.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(icon, color: iconColor, size: 22),
@@ -876,21 +955,21 @@ class _ProfileView extends StatelessWidget {
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: textColor ?? const Color(0xFF1E293B),
+          color: textColor ?? AppColors.textPrimary(context),
         ),
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
-          color: Color(0xFF64748B),
+          color: AppColors.textSecondary(context),
         ),
       ),
       trailing: trailing ??
-          const Icon(
-            Icons.arrow_forward_ios_rounded,
-            size: 14,
-            color: Color(0xFF94A3B8),
+          Icon(
+            context.isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
+            size: 20,
+            color: AppColors.textMuted(context),
           ),
       onTap: onTap,
     );

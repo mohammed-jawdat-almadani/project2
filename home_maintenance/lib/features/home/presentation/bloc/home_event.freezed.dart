@@ -55,7 +55,7 @@ extension HomeEventPatterns on HomeEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _ToggleAvailability value)?  toggleAvailability,TResult Function( _LocationChanged value)?  locationChanged,TResult Function( _HeartbeatTick value)?  heartbeatTick,TResult Function( _FetchOffers value)?  fetchOffers,TResult Function( _AcceptOffer value)?  acceptOffer,TResult Function( _DeclineOffer value)?  declineOffer,TResult Function( _ChangeTab value)?  changeTab,TResult Function( _DismissOffer value)?  dismissOffer,TResult Function( _SimulateOffer value)?  simulateOffer,TResult Function( _ArriveOrder value)?  arriveOrder,TResult Function( _WithdrawOrder value)?  withdrawOrder,TResult Function( _SendQuote value)?  sendQuote,TResult Function( _SendAddonQuote value)?  sendAddonQuote,TResult Function( _RequestWaitingForParts value)?  requestWaitingForParts,TResult Function( _ResumeOrder value)?  resumeOrder,TResult Function( _RequestClosure value)?  requestClosure,TResult Function( _VerifyClosure value)?  verifyClosure,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Init value)?  init,TResult Function( _ToggleAvailability value)?  toggleAvailability,TResult Function( _LocationChanged value)?  locationChanged,TResult Function( _HeartbeatTick value)?  heartbeatTick,TResult Function( _FetchOffers value)?  fetchOffers,TResult Function( _AcceptOffer value)?  acceptOffer,TResult Function( _DeclineOffer value)?  declineOffer,TResult Function( _ChangeTab value)?  changeTab,TResult Function( _DismissOffer value)?  dismissOffer,TResult Function( _SimulateOffer value)?  simulateOffer,TResult Function( _ArriveOrder value)?  arriveOrder,TResult Function( _WithdrawOrder value)?  withdrawOrder,TResult Function( _SendQuote value)?  sendQuote,TResult Function( _SendAddonQuote value)?  sendAddonQuote,TResult Function( _RequestWaitingForParts value)?  requestWaitingForParts,TResult Function( _ResumeOrder value)?  resumeOrder,TResult Function( _RequestClosure value)?  requestClosure,TResult Function( _VerifyClosure value)?  verifyClosure,TResult Function( _ReportClientNoShow value)?  reportClientNoShow,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -76,7 +76,8 @@ return sendAddonQuote(_that);case _RequestWaitingForParts() when requestWaitingF
 return requestWaitingForParts(_that);case _ResumeOrder() when resumeOrder != null:
 return resumeOrder(_that);case _RequestClosure() when requestClosure != null:
 return requestClosure(_that);case _VerifyClosure() when verifyClosure != null:
-return verifyClosure(_that);case _:
+return verifyClosure(_that);case _ReportClientNoShow() when reportClientNoShow != null:
+return reportClientNoShow(_that);case _:
   return orElse();
 
 }
@@ -94,7 +95,7 @@ return verifyClosure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _ToggleAvailability value)  toggleAvailability,required TResult Function( _LocationChanged value)  locationChanged,required TResult Function( _HeartbeatTick value)  heartbeatTick,required TResult Function( _FetchOffers value)  fetchOffers,required TResult Function( _AcceptOffer value)  acceptOffer,required TResult Function( _DeclineOffer value)  declineOffer,required TResult Function( _ChangeTab value)  changeTab,required TResult Function( _DismissOffer value)  dismissOffer,required TResult Function( _SimulateOffer value)  simulateOffer,required TResult Function( _ArriveOrder value)  arriveOrder,required TResult Function( _WithdrawOrder value)  withdrawOrder,required TResult Function( _SendQuote value)  sendQuote,required TResult Function( _SendAddonQuote value)  sendAddonQuote,required TResult Function( _RequestWaitingForParts value)  requestWaitingForParts,required TResult Function( _ResumeOrder value)  resumeOrder,required TResult Function( _RequestClosure value)  requestClosure,required TResult Function( _VerifyClosure value)  verifyClosure,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Init value)  init,required TResult Function( _ToggleAvailability value)  toggleAvailability,required TResult Function( _LocationChanged value)  locationChanged,required TResult Function( _HeartbeatTick value)  heartbeatTick,required TResult Function( _FetchOffers value)  fetchOffers,required TResult Function( _AcceptOffer value)  acceptOffer,required TResult Function( _DeclineOffer value)  declineOffer,required TResult Function( _ChangeTab value)  changeTab,required TResult Function( _DismissOffer value)  dismissOffer,required TResult Function( _SimulateOffer value)  simulateOffer,required TResult Function( _ArriveOrder value)  arriveOrder,required TResult Function( _WithdrawOrder value)  withdrawOrder,required TResult Function( _SendQuote value)  sendQuote,required TResult Function( _SendAddonQuote value)  sendAddonQuote,required TResult Function( _RequestWaitingForParts value)  requestWaitingForParts,required TResult Function( _ResumeOrder value)  resumeOrder,required TResult Function( _RequestClosure value)  requestClosure,required TResult Function( _VerifyClosure value)  verifyClosure,required TResult Function( _ReportClientNoShow value)  reportClientNoShow,}){
 final _that = this;
 switch (_that) {
 case _Init():
@@ -115,7 +116,8 @@ return sendAddonQuote(_that);case _RequestWaitingForParts():
 return requestWaitingForParts(_that);case _ResumeOrder():
 return resumeOrder(_that);case _RequestClosure():
 return requestClosure(_that);case _VerifyClosure():
-return verifyClosure(_that);case _:
+return verifyClosure(_that);case _ReportClientNoShow():
+return reportClientNoShow(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -132,7 +134,7 @@ return verifyClosure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _ToggleAvailability value)?  toggleAvailability,TResult? Function( _LocationChanged value)?  locationChanged,TResult? Function( _HeartbeatTick value)?  heartbeatTick,TResult? Function( _FetchOffers value)?  fetchOffers,TResult? Function( _AcceptOffer value)?  acceptOffer,TResult? Function( _DeclineOffer value)?  declineOffer,TResult? Function( _ChangeTab value)?  changeTab,TResult? Function( _DismissOffer value)?  dismissOffer,TResult? Function( _SimulateOffer value)?  simulateOffer,TResult? Function( _ArriveOrder value)?  arriveOrder,TResult? Function( _WithdrawOrder value)?  withdrawOrder,TResult? Function( _SendQuote value)?  sendQuote,TResult? Function( _SendAddonQuote value)?  sendAddonQuote,TResult? Function( _RequestWaitingForParts value)?  requestWaitingForParts,TResult? Function( _ResumeOrder value)?  resumeOrder,TResult? Function( _RequestClosure value)?  requestClosure,TResult? Function( _VerifyClosure value)?  verifyClosure,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Init value)?  init,TResult? Function( _ToggleAvailability value)?  toggleAvailability,TResult? Function( _LocationChanged value)?  locationChanged,TResult? Function( _HeartbeatTick value)?  heartbeatTick,TResult? Function( _FetchOffers value)?  fetchOffers,TResult? Function( _AcceptOffer value)?  acceptOffer,TResult? Function( _DeclineOffer value)?  declineOffer,TResult? Function( _ChangeTab value)?  changeTab,TResult? Function( _DismissOffer value)?  dismissOffer,TResult? Function( _SimulateOffer value)?  simulateOffer,TResult? Function( _ArriveOrder value)?  arriveOrder,TResult? Function( _WithdrawOrder value)?  withdrawOrder,TResult? Function( _SendQuote value)?  sendQuote,TResult? Function( _SendAddonQuote value)?  sendAddonQuote,TResult? Function( _RequestWaitingForParts value)?  requestWaitingForParts,TResult? Function( _ResumeOrder value)?  resumeOrder,TResult? Function( _RequestClosure value)?  requestClosure,TResult? Function( _VerifyClosure value)?  verifyClosure,TResult? Function( _ReportClientNoShow value)?  reportClientNoShow,}){
 final _that = this;
 switch (_that) {
 case _Init() when init != null:
@@ -153,7 +155,8 @@ return sendAddonQuote(_that);case _RequestWaitingForParts() when requestWaitingF
 return requestWaitingForParts(_that);case _ResumeOrder() when resumeOrder != null:
 return resumeOrder(_that);case _RequestClosure() when requestClosure != null:
 return requestClosure(_that);case _VerifyClosure() when verifyClosure != null:
-return verifyClosure(_that);case _:
+return verifyClosure(_that);case _ReportClientNoShow() when reportClientNoShow != null:
+return reportClientNoShow(_that);case _:
   return null;
 
 }
@@ -170,7 +173,7 @@ return verifyClosure(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( bool isAvailable)?  toggleAvailability,TResult Function( double lat,  double lng)?  locationChanged,TResult Function()?  heartbeatTick,TResult Function()?  fetchOffers,TResult Function( int offerId)?  acceptOffer,TResult Function( int offerId,  String? reason)?  declineOffer,TResult Function( int index)?  changeTab,TResult Function()?  dismissOffer,TResult Function()?  simulateOffer,TResult Function( int orderId)?  arriveOrder,TResult Function( int orderId,  String? reason)?  withdrawOrder,TResult Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)?  sendQuote,TResult Function( int orderId,  String laborCost,  List<QuotePart> parts)?  sendAddonQuote,TResult Function( int orderId,  String note)?  requestWaitingForParts,TResult Function( int orderId)?  resumeOrder,TResult Function( int orderId,  List<File> photos)?  requestClosure,TResult Function( int orderId,  String code)?  verifyClosure,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  init,TResult Function( bool isAvailable)?  toggleAvailability,TResult Function( double lat,  double lng)?  locationChanged,TResult Function()?  heartbeatTick,TResult Function()?  fetchOffers,TResult Function( int offerId)?  acceptOffer,TResult Function( int offerId,  String? reason)?  declineOffer,TResult Function( int index)?  changeTab,TResult Function()?  dismissOffer,TResult Function()?  simulateOffer,TResult Function( int orderId)?  arriveOrder,TResult Function( int orderId,  String? reason)?  withdrawOrder,TResult Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)?  sendQuote,TResult Function( int orderId,  String laborCost,  List<QuotePart> parts)?  sendAddonQuote,TResult Function( int orderId,  String note)?  requestWaitingForParts,TResult Function( int orderId)?  resumeOrder,TResult Function( int orderId,  List<File> photos)?  requestClosure,TResult Function( int orderId,  String code)?  verifyClosure,TResult Function( int orderId)?  reportClientNoShow,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _ToggleAvailability() when toggleAvailability != null:
@@ -190,7 +193,8 @@ return sendAddonQuote(_that.orderId,_that.laborCost,_that.parts);case _RequestWa
 return requestWaitingForParts(_that.orderId,_that.note);case _ResumeOrder() when resumeOrder != null:
 return resumeOrder(_that.orderId);case _RequestClosure() when requestClosure != null:
 return requestClosure(_that.orderId,_that.photos);case _VerifyClosure() when verifyClosure != null:
-return verifyClosure(_that.orderId,_that.code);case _:
+return verifyClosure(_that.orderId,_that.code);case _ReportClientNoShow() when reportClientNoShow != null:
+return reportClientNoShow(_that.orderId);case _:
   return orElse();
 
 }
@@ -208,7 +212,7 @@ return verifyClosure(_that.orderId,_that.code);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( bool isAvailable)  toggleAvailability,required TResult Function( double lat,  double lng)  locationChanged,required TResult Function()  heartbeatTick,required TResult Function()  fetchOffers,required TResult Function( int offerId)  acceptOffer,required TResult Function( int offerId,  String? reason)  declineOffer,required TResult Function( int index)  changeTab,required TResult Function()  dismissOffer,required TResult Function()  simulateOffer,required TResult Function( int orderId)  arriveOrder,required TResult Function( int orderId,  String? reason)  withdrawOrder,required TResult Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)  sendQuote,required TResult Function( int orderId,  String laborCost,  List<QuotePart> parts)  sendAddonQuote,required TResult Function( int orderId,  String note)  requestWaitingForParts,required TResult Function( int orderId)  resumeOrder,required TResult Function( int orderId,  List<File> photos)  requestClosure,required TResult Function( int orderId,  String code)  verifyClosure,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  init,required TResult Function( bool isAvailable)  toggleAvailability,required TResult Function( double lat,  double lng)  locationChanged,required TResult Function()  heartbeatTick,required TResult Function()  fetchOffers,required TResult Function( int offerId)  acceptOffer,required TResult Function( int offerId,  String? reason)  declineOffer,required TResult Function( int index)  changeTab,required TResult Function()  dismissOffer,required TResult Function()  simulateOffer,required TResult Function( int orderId)  arriveOrder,required TResult Function( int orderId,  String? reason)  withdrawOrder,required TResult Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)  sendQuote,required TResult Function( int orderId,  String laborCost,  List<QuotePart> parts)  sendAddonQuote,required TResult Function( int orderId,  String note)  requestWaitingForParts,required TResult Function( int orderId)  resumeOrder,required TResult Function( int orderId,  List<File> photos)  requestClosure,required TResult Function( int orderId,  String code)  verifyClosure,required TResult Function( int orderId)  reportClientNoShow,}) {final _that = this;
 switch (_that) {
 case _Init():
 return init();case _ToggleAvailability():
@@ -228,7 +232,8 @@ return sendAddonQuote(_that.orderId,_that.laborCost,_that.parts);case _RequestWa
 return requestWaitingForParts(_that.orderId,_that.note);case _ResumeOrder():
 return resumeOrder(_that.orderId);case _RequestClosure():
 return requestClosure(_that.orderId,_that.photos);case _VerifyClosure():
-return verifyClosure(_that.orderId,_that.code);case _:
+return verifyClosure(_that.orderId,_that.code);case _ReportClientNoShow():
+return reportClientNoShow(_that.orderId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -245,7 +250,7 @@ return verifyClosure(_that.orderId,_that.code);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( bool isAvailable)?  toggleAvailability,TResult? Function( double lat,  double lng)?  locationChanged,TResult? Function()?  heartbeatTick,TResult? Function()?  fetchOffers,TResult? Function( int offerId)?  acceptOffer,TResult? Function( int offerId,  String? reason)?  declineOffer,TResult? Function( int index)?  changeTab,TResult? Function()?  dismissOffer,TResult? Function()?  simulateOffer,TResult? Function( int orderId)?  arriveOrder,TResult? Function( int orderId,  String? reason)?  withdrawOrder,TResult? Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)?  sendQuote,TResult? Function( int orderId,  String laborCost,  List<QuotePart> parts)?  sendAddonQuote,TResult? Function( int orderId,  String note)?  requestWaitingForParts,TResult? Function( int orderId)?  resumeOrder,TResult? Function( int orderId,  List<File> photos)?  requestClosure,TResult? Function( int orderId,  String code)?  verifyClosure,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  init,TResult? Function( bool isAvailable)?  toggleAvailability,TResult? Function( double lat,  double lng)?  locationChanged,TResult? Function()?  heartbeatTick,TResult? Function()?  fetchOffers,TResult? Function( int offerId)?  acceptOffer,TResult? Function( int offerId,  String? reason)?  declineOffer,TResult? Function( int index)?  changeTab,TResult? Function()?  dismissOffer,TResult? Function()?  simulateOffer,TResult? Function( int orderId)?  arriveOrder,TResult? Function( int orderId,  String? reason)?  withdrawOrder,TResult? Function( int orderId,  String laborCost,  int warrantyDays,  List<QuotePart> parts)?  sendQuote,TResult? Function( int orderId,  String laborCost,  List<QuotePart> parts)?  sendAddonQuote,TResult? Function( int orderId,  String note)?  requestWaitingForParts,TResult? Function( int orderId)?  resumeOrder,TResult? Function( int orderId,  List<File> photos)?  requestClosure,TResult? Function( int orderId,  String code)?  verifyClosure,TResult? Function( int orderId)?  reportClientNoShow,}) {final _that = this;
 switch (_that) {
 case _Init() when init != null:
 return init();case _ToggleAvailability() when toggleAvailability != null:
@@ -265,7 +270,8 @@ return sendAddonQuote(_that.orderId,_that.laborCost,_that.parts);case _RequestWa
 return requestWaitingForParts(_that.orderId,_that.note);case _ResumeOrder() when resumeOrder != null:
 return resumeOrder(_that.orderId);case _RequestClosure() when requestClosure != null:
 return requestClosure(_that.orderId,_that.photos);case _VerifyClosure() when verifyClosure != null:
-return verifyClosure(_that.orderId,_that.code);case _:
+return verifyClosure(_that.orderId,_that.code);case _ReportClientNoShow() when reportClientNoShow != null:
+return reportClientNoShow(_that.orderId);case _:
   return null;
 
 }
@@ -1325,6 +1331,72 @@ class __$VerifyClosureCopyWithImpl<$Res>
 orderId: null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
 as int,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ReportClientNoShow implements HomeEvent {
+  const _ReportClientNoShow(this.orderId);
+  
+
+ final  int orderId;
+
+/// Create a copy of HomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ReportClientNoShowCopyWith<_ReportClientNoShow> get copyWith => __$ReportClientNoShowCopyWithImpl<_ReportClientNoShow>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ReportClientNoShow&&(identical(other.orderId, orderId) || other.orderId == orderId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,orderId);
+
+@override
+String toString() {
+  return 'HomeEvent.reportClientNoShow(orderId: $orderId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ReportClientNoShowCopyWith<$Res> implements $HomeEventCopyWith<$Res> {
+  factory _$ReportClientNoShowCopyWith(_ReportClientNoShow value, $Res Function(_ReportClientNoShow) _then) = __$ReportClientNoShowCopyWithImpl;
+@useResult
+$Res call({
+ int orderId
+});
+
+
+
+
+}
+/// @nodoc
+class __$ReportClientNoShowCopyWithImpl<$Res>
+    implements _$ReportClientNoShowCopyWith<$Res> {
+  __$ReportClientNoShowCopyWithImpl(this._self, this._then);
+
+  final _ReportClientNoShow _self;
+  final $Res Function(_ReportClientNoShow) _then;
+
+/// Create a copy of HomeEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? orderId = null,}) {
+  return _then(_ReportClientNoShow(
+null == orderId ? _self.orderId : orderId // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

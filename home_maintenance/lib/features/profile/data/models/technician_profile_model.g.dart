@@ -24,6 +24,8 @@ _TechnicianProfileModel _$TechnicianProfileModelFromJson(
   name: json['name'] as String?,
   phone: json['phone'] as String?,
   createdAt: json['created_at'] as String?,
+  profilePhotoUrl: json['profile_photo_url'] as String?,
+  profileImageUrl: json['profile_image_url'] as String?,
   completedOrdersCount: (json['completed_orders_count'] as num?)?.toInt() ?? 0,
 );
 
@@ -41,5 +43,7 @@ Map<String, dynamic> _$TechnicianProfileModelToJson(
   'name': instance.name,
   'phone': instance.phone,
   'created_at': instance.createdAt,
+  'profile_photo_url': instance.profilePhotoUrl,
+  'profile_image_url': instance.profileImageUrl,
   'completed_orders_count': instance.completedOrdersCount,
 };

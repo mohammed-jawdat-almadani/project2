@@ -61,6 +61,8 @@ class _ChatViewState extends State<_ChatView> {
     try {
       final picked = await _picker.pickImage(
         source: source,
+        maxWidth: 1200,
+        maxHeight: 1200,
         imageQuality: 80,
       );
       if (picked != null) {
@@ -199,6 +201,13 @@ class _ChatViewState extends State<_ChatView> {
     return '$hour:$minute $period';
   }
 
+  String _getClientDisplayName(BuildContext context, String name) {
+    if (name == 'العميل' || name == 'Client' || name.trim().isEmpty) {
+      return context.tr('client');
+    }
+    return name;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = AppColors.isDark(context);
@@ -258,7 +267,7 @@ class _ChatViewState extends State<_ChatView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      widget.clientName,
+                      _getClientDisplayName(context, widget.clientName),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,

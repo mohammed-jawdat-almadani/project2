@@ -27,6 +27,7 @@ import '../../domain/usecases/decline_offer_usecase.dart';
 import '../../domain/usecases/update_location_usecase.dart';
 import '../../domain/usecases/arrive_order_usecase.dart';
 import '../../domain/usecases/withdraw_order_usecase.dart';
+import '../../domain/usecases/report_client_no_show_usecase.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
@@ -41,6 +42,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final UpdateLocationUseCase _updateLocationUseCase;
   final ArriveOrderUseCase _arriveOrderUseCase;
   final WithdrawOrderUseCase _withdrawOrderUseCase;
+  final ReportClientNoShowUseCase _reportClientNoShowUseCase;
   final SendQuoteUseCase _sendQuoteUseCase;
   final SendAddonQuoteUseCase _sendAddonQuoteUseCase;
   final GetQuotesUseCase _getQuotesUseCase;
@@ -65,6 +67,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     this._updateLocationUseCase,
     this._arriveOrderUseCase,
     this._withdrawOrderUseCase,
+    this._reportClientNoShowUseCase,
     this._sendQuoteUseCase,
     this._sendAddonQuoteUseCase,
     this._getQuotesUseCase,
@@ -100,6 +103,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         simulateOffer: () async => _onSimulateOffer(emit),
         arriveOrder: (orderId) => _onArriveOrder(orderId, emit),
         withdrawOrder: (orderId, reason) => _onWithdrawOrder(orderId, reason, emit),
+        reportClientNoShow: (orderId) => _onReportClientNoShow(orderId, emit),
         sendQuote: (orderId, laborCost, warrantyDays, parts) =>
             _onSendQuote(orderId, laborCost, warrantyDays, parts, emit),
         sendAddonQuote: (orderId, laborCost, parts) =>
@@ -527,6 +531,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           isProcessingOffer: false,
           activeOrder: null,
           successMessage: 'تم الانسحاب من الطلب بنجاح',
+        ));
+        add(const HomeEvent.fetchOffers());
+      },
+    );
+  }
+
+  Future<void> _onReportClientNoShow(
+      int orderId, Emitter<HomeState> emit) async {
+    emit(state.copyWith(isProcessingOffer: true, errorMessage: null));
+
+    final result = await _reportClientNoShowUseCase(orderId);
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(
+          isProcessingOffer: false,
+          errorMessage: failure.message,
+        ));
+      },
+      (_) {
+        emit(state.copyWith(
+          isProcessingOffer: false,
+          successMessage: 'تم رفع بلاغ عدم تواجد العميل بنجاح، وهو قيد مراجعة الإدارة لتحرير أجور الكشفية 📋',
         ));
         add(const HomeEvent.fetchOffers());
       },

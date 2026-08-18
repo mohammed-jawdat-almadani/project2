@@ -27,6 +27,8 @@ abstract class HomeRemoteDataSource {
   Future<void> arriveOrder(int orderId, {required double lat, required double lng});
 
   Future<void> withdrawOrder(int orderId, {String? reason});
+
+  Future<void> reportClientNoShow(int orderId);
 }
 
 @LazySingleton(as: HomeRemoteDataSource)
@@ -187,6 +189,19 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     final response = await _dio.post(
       '/api/orders/$orderId/withdraw',
       data: reason != null ? {'reason': reason} : {},
+    );
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+      );
+    }
+  }
+
+  @override
+  Future<void> reportClientNoShow(int orderId) async {
+    final response = await _dio.post(
+      '/api/orders/$orderId/no-show/client',
     );
     if (response.statusCode != 200 && response.statusCode != 204) {
       throw DioException(

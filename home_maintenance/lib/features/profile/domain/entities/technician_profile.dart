@@ -15,5 +15,6 @@ abstract class TechnicianProfile with _$TechnicianProfile {
     @Default([]) List<String> serviceCategoryNames,
     @Default(0) int completedOrdersCount,
     DateTime? memberSince,
+    String? profilePhotoUrl,
   }) = _TechnicianProfile;
 }

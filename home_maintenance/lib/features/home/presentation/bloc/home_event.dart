@@ -42,4 +42,5 @@ abstract class HomeEvent with _$HomeEvent {
     required int orderId,
     required String code,
   }) = _VerifyClosure;
+  const factory HomeEvent.reportClientNoShow(int orderId) = _ReportClientNoShow;
 }

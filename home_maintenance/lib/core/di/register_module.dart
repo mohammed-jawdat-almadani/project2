@@ -12,11 +12,10 @@ abstract class RegisterModule {
     final dio = Dio(
       BaseOptions(
         baseUrl: 'https://home-maintenance.me',
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        connectTimeout: const Duration(seconds: 25),
+        receiveTimeout: const Duration(seconds: 25),
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
         },
       ),
     );

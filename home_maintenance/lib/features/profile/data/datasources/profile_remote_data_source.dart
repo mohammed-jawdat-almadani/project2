@@ -25,14 +25,55 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
   @override
   Future<TechnicianProfileModel> getProfile() async {
-    final response = await _dio.get('/api/technician/me');
-    if (response.statusCode == 200) {
-      final data = response.data['data'] as Map<String, dynamic>;
+    final techResponse = await _dio.get('/api/technician/me');
+    if (techResponse.statusCode == 200) {
+      final data = Map<String, dynamic>.from(techResponse.data['data'] as Map);
+
+      // Fetch user info directly from /api/auth/me
+      try {
+        final authMe = await _dio.get('/api/auth/me');
+        if (authMe.statusCode == 200 && authMe.data != null) {
+          final userData = authMe.data is Map
+              ? (authMe.data['data'] ?? authMe.data['user'] ?? authMe.data)
+              : null;
+          if (userData is Map) {
+            if (userData['name'] != null && userData['name'].toString().isNotEmpty) {
+              data['name'] = userData['name'];
+              await _secureStorage.write(key: 'auth_user_name', value: userData['name'].toString());
+            }
+            if (userData['phone'] != null && userData['phone'].toString().isNotEmpty) {
+              data['phone'] = userData['phone'];
+              await _secureStorage.write(key: 'auth_user_phone', value: userData['phone'].toString());
+            }
+            if (userData['profile_image_url'] != null) {
+              data['profile_photo_url'] = userData['profile_image_url'];
+            }
+          }
+        }
+      } catch (_) {
+        // Fallback to cache
+      }
+
+      final savedName = await _secureStorage.read(key: 'auth_user_name');
+      final savedPhone = await _secureStorage.read(key: 'auth_user_phone');
+      final savedPhoto = await _secureStorage.read(key: 'auth_user_photo');
+      final localPhoto = await _secureStorage.read(key: 'auth_local_photo_path');
+
+      if ((data['name'] == null || data['name'].toString().isEmpty) && savedName != null) {
+        data['name'] = savedName;
+      }
+      if ((data['phone'] == null || data['phone'].toString().isEmpty) && savedPhone != null) {
+        data['phone'] = savedPhone;
+      }
+      if (data['profile_photo_url'] == null || data['profile_photo_url'].toString().isEmpty) {
+        data['profile_photo_url'] = savedPhoto ?? localPhoto;
+      }
+
       return TechnicianProfileModel.fromJson(data);
     } else {
       throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+        requestOptions: techResponse.requestOptions,
+        response: techResponse,
       );
     }
   }

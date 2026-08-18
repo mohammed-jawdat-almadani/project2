@@ -59,7 +59,7 @@ class WalletBalanceCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    context.isArabic ? 'محفظة الفني' : 'Technician Wallet',
+                    context.tr('technician_wallet'),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 15,

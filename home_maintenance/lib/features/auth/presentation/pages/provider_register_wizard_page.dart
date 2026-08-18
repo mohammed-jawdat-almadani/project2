@@ -89,8 +89,13 @@ class _ProviderRegisterWizardPageState extends State<ProviderRegisterWizardPage>
           listener: (context, authState) {
             authState.maybeWhen(
               authenticated: (user) {
-                if (user.role == UserRole.technician && user.technicianStatus != TechnicianStatus.active) {
-                  context.go('/activation');
+                if (user.role == UserRole.technician) {
+                  if (user.technicianStatus == TechnicianStatus.active ||
+                      user.technicianStatus == TechnicianStatus.probation) {
+                    context.go('/');
+                  } else {
+                    context.go('/activation');
+                  }
                 } else {
                   context.go('/');
                 }
@@ -305,7 +310,12 @@ class _ProviderRegisterWizardPageState extends State<ProviderRegisterWizardPage>
   }
 
   Future<void> _pickImage(ImageSource source, Function(XFile?) onPicked) async {
-    final XFile? image = await _picker.pickImage(source: source);
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 80,
+    );
     if (image != null) onPicked(image);
   }
 

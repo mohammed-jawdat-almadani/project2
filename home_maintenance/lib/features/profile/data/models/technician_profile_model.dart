@@ -20,6 +20,8 @@ abstract class TechnicianProfileModel with _$TechnicianProfileModel {
     String? name,
     String? phone,
     @JsonKey(name: 'created_at') String? createdAt,
+    @JsonKey(name: 'profile_photo_url') String? profilePhotoUrl,
+    @JsonKey(name: 'profile_image_url') String? profileImageUrl,
     @JsonKey(name: 'completed_orders_count') @Default(0) int completedOrdersCount,
   }) = _TechnicianProfileModel;
 
@@ -30,10 +32,15 @@ abstract class TechnicianProfileModel with _$TechnicianProfileModel {
     final userData = user ?? {};
     final resolvedName = (name != null && name!.isNotEmpty)
         ? name!
-        : (userData['name'] as String? ?? 'فني الصيانة');
+        : (userData['name'] as String? ?? '');
     final resolvedPhone = (phone != null && phone!.isNotEmpty)
         ? phone!
         : (userData['phone'] as String? ?? '');
+    final resolvedPhoto = (profilePhotoUrl != null && profilePhotoUrl!.isNotEmpty)
+        ? profilePhotoUrl
+        : ((profileImageUrl != null && profileImageUrl!.isNotEmpty)
+            ? profileImageUrl
+            : (userData['profile_image_url'] as String? ?? userData['profile_photo_url'] as String?));
     final dateStr = createdAt ?? userData['created_at'] as String?;
 
     final categoryNames = <String>[];
@@ -56,6 +63,7 @@ abstract class TechnicianProfileModel with _$TechnicianProfileModel {
       serviceCategoryNames: categoryNames,
       completedOrdersCount: completedOrdersCount,
       memberSince: dateStr != null ? DateTime.tryParse(dateStr) : null,
+      profilePhotoUrl: resolvedPhoto,
     );
   }
 }

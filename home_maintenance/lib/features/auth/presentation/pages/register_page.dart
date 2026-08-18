@@ -46,7 +46,12 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
                 },
                 otpSent: (debugCode) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${context.isArabic ? "تم إرسال الرمز بنجاح." : "Code sent successfully."} ${debugCode != null ? 'Debug Code: $debugCode' : ''}')),
+                    SnackBar(
+                      content: Text(context.tr('otp_sent_success')),
+                      backgroundColor: const Color(0xFF16A34A),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   );
                   final phone = context.read<RegisterBloc>().state.phone.value;
                   context.push('/register/otp', extra: phone);

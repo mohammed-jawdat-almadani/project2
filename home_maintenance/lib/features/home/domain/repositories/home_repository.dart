@@ -27,4 +27,6 @@ abstract class HomeRepository {
   Future<Either<Failure, void>> arriveOrder(int orderId, {required double lat, required double lng});
 
   Future<Either<Failure, void>> withdrawOrder(int orderId, {String? reason});
+
+  Future<Either<Failure, void>> reportClientNoShow(int orderId);
 }

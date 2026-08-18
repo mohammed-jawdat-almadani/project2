@@ -69,6 +69,54 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
     );
   }
 
+  void _showClientNoShowConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: AppColors.surface(context),
+        title: Row(
+          children: [
+            const Icon(Icons.person_off_rounded, color: Color(0xFFDC2626), size: 28),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                context.tr('client_no_show_confirm_title'),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          context.tr('client_no_show_confirm_desc'),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context), height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(context.tr('cancel'), style: TextStyle(color: AppColors.textSecondary(context))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              context.read<HomeBloc>().add(HomeEvent.reportClientNoShow(order.orderId));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(context.tr('confirm')),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _openSendQuoteSheet(BuildContext context, {bool isAddon = false}) {
     showModalBottomSheet(
       context: context,
@@ -446,7 +494,7 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
     );
   }
 
-  // 2. Arrived Actions: Send Quote (Primary), Chat
+  // 2. Arrived Actions: Send Quote (Primary), Chat, Client No-Show
   Widget _buildArrivedActions(BuildContext context) {
     return Column(
       children: [
@@ -466,7 +514,27 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _buildChatButton(context),
+        Row(
+          children: [
+            Expanded(child: _buildChatButton(context)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _showClientNoShowConfirmation(context),
+                icon: const Icon(Icons.person_off_rounded, size: 16, color: Color(0xFFDC2626)),
+                label: Text(
+                  context.tr('client_no_show_btn'),
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFFDC2626)),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  side: const BorderSide(color: Color(0xFFFCA5A5)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -679,12 +747,15 @@ class ActiveAcceptedOrderCard extends StatelessWidget {
   }
 
   Widget _buildChatButton(BuildContext context) {
+    final clientTitle = (order.clientName.isNotEmpty && order.clientName != 'العميل')
+        ? order.clientName
+        : context.tr('client');
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: () {
           context.push(
-            '/chat/${order.orderId}?clientName=${Uri.encodeComponent(order.clientName)}',
+            '/chat/${order.orderId}?clientName=${Uri.encodeComponent(clientTitle)}',
           );
         },
         icon: const Icon(Icons.chat_bubble_rounded, size: 16),

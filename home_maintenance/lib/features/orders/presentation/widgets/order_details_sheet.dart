@@ -75,6 +75,55 @@ class OrderDetailsSheet extends StatelessWidget {
     );
   }
 
+  void _showClientNoShowConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface(context),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            const Icon(Icons.person_off_rounded, color: Color(0xFFDC2626), size: 28),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                context.tr('client_no_show_confirm_title'),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          context.tr('client_no_show_confirm_desc'),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondary(context), height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(context.tr('cancel'), style: TextStyle(color: AppColors.textSecondary(context))),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.of(context).pop();
+              context.read<HomeBloc>().add(HomeEvent.reportClientNoShow(order.id));
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC2626),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text(context.tr('confirm')),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _openSendQuoteSheet(BuildContext context, {bool isAddon = false}) {
     showModalBottomSheet(
       context: context,
@@ -487,6 +536,24 @@ class OrderDetailsSheet extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
+                // Client No-Show Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _showClientNoShowConfirmation(context),
+                    icon: const Icon(Icons.person_off_rounded, size: 18, color: Color(0xFFDC2626)),
+                    label: Text(
+                      context.tr('client_no_show_btn'),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFDC2626)),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFFCA5A5)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
               ] else if (isQuotePending) ...[
                 // 3. Quote Pending Info
                 Container(
@@ -666,8 +733,11 @@ class OrderDetailsSheet extends StatelessWidget {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       Navigator.of(context).pop();
+                      final clientTitle = (order.clientName != null && order.clientName!.isNotEmpty)
+                          ? order.clientName!
+                          : context.tr('client');
                       context.push(
-                        '/chat/${order.id}?clientName=${Uri.encodeComponent(order.clientName ?? "العميل")}',
+                        '/chat/${order.id}?clientName=${Uri.encodeComponent(clientTitle)}',
                       );
                     },
                     icon: const Icon(Icons.chat_bubble_rounded, size: 18),

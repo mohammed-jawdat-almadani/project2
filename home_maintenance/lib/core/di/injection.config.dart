@@ -64,6 +64,8 @@ import '../../features/home/domain/usecases/get_availability_usecase.dart'
     as _i427;
 import '../../features/home/domain/usecases/get_offers_usecase.dart' as _i176;
 import '../../features/home/domain/usecases/get_orders_usecase.dart' as _i333;
+import '../../features/home/domain/usecases/report_client_no_show_usecase.dart'
+    as _i812;
 import '../../features/home/domain/usecases/set_availability_usecase.dart'
     as _i1033;
 import '../../features/home/domain/usecases/update_location_usecase.dart'
@@ -355,6 +357,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i928.FcmService>(),
       ),
     );
+    gh.lazySingleton<_i812.ReportClientNoShowUseCase>(
+      () => _i812.ReportClientNoShowUseCase(gh<_i0.HomeRepository>()),
+    );
     gh.factory<_i279.ProviderRegisterWizardBloc>(
       () => _i279.ProviderRegisterWizardBloc(gh<_i332.GetCategoriesUseCase>()),
     );
@@ -403,6 +408,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i15.UpdateLocationUseCase>(),
         gh<_i124.ArriveOrderUseCase>(),
         gh<_i1065.WithdrawOrderUseCase>(),
+        gh<_i812.ReportClientNoShowUseCase>(),
         gh<_i700.SendQuoteUseCase>(),
         gh<_i609.SendAddonQuoteUseCase>(),
         gh<_i275.GetQuotesUseCase>(),

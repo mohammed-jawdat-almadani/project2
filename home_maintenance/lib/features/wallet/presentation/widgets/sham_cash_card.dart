@@ -164,9 +164,9 @@ class ShamCashCard extends StatelessWidget {
                 color: isDark ? const Color(0xFF064E3B).withValues(alpha: 0.3) : const Color(0xFFDCFCE7),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Text(
-                'مرتبط 🟢',
-                style: TextStyle(
+              child: Text(
+                context.tr('sham_cash_linked_badge'),
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF16A34A),

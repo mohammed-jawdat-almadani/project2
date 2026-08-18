@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:injectable/injectable.dart';
 import '../../../../core/enums/user_role.dart';
 
@@ -55,6 +56,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (token != null) {
         await _secureStorage.write(key: 'auth_token', value: token);
         await _secureStorage.write(key: 'auth_role', value: user.role.value);
+        await _secureStorage.write(key: 'auth_user_id', value: user.id.toString());
+        await _secureStorage.write(key: 'auth_user_name', value: user.name);
+        await _secureStorage.write(key: 'auth_user_phone', value: user.phone);
+        if (user.profileImageUrl != null) {
+          await _secureStorage.write(key: 'auth_user_photo', value: user.profileImageUrl);
+        }
       }
       return user;
     } else {
@@ -120,6 +127,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  MediaType _getImageMediaType(String filename) {
+    final ext = filename.split('.').last.toLowerCase();
+    switch (ext) {
+      case 'png':
+        return MediaType('image', 'png');
+      case 'webp':
+        return MediaType('image', 'webp');
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return MediaType('image', 'jpeg');
+    }
+  }
+
   @override
   Future<UserModel> registerProvider({
     required String phone,
@@ -133,38 +154,54 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? idBackPath,
   }) async {
     final formattedPhone = phone.startsWith('0') ? phone : '0$phone';
-    final formData = FormData.fromMap({
+    final map = <String, dynamic>{
       'phone': formattedPhone,
-      'name': name,
+      'name': name.trim(),
       'password': password,
       'password_confirmation': passwordConfirmation,
-      'charter_accepted': 'true',
+      'charter_accepted': '1',
       'ticket': ticket,
-    });
+    };
 
-    if (selfiePath != null) {
-      formData.files.add(MapEntry(
-        'selfie',
-        await MultipartFile.fromFile(selfiePath),
-      ));
+    if (selfiePath != null && selfiePath.isNotEmpty) {
+      final filename = selfiePath.split(RegExp(r'[\\/]')).last;
+      map['selfie'] = await MultipartFile.fromFile(
+        selfiePath,
+        filename: filename,
+        contentType: _getImageMediaType(filename),
+      );
+      map['profile_photo'] = await MultipartFile.fromFile(
+        selfiePath,
+        filename: filename,
+        contentType: _getImageMediaType(filename),
+      );
     }
-    if (idFrontPath != null) {
-      formData.files.add(MapEntry(
-        'id_front',
-        await MultipartFile.fromFile(idFrontPath),
-      ));
+    if (idFrontPath != null && idFrontPath.isNotEmpty) {
+      final filename = idFrontPath.split(RegExp(r'[\\/]')).last;
+      map['id_front'] = await MultipartFile.fromFile(
+        idFrontPath,
+        filename: filename,
+        contentType: _getImageMediaType(filename),
+      );
     }
-    if (idBackPath != null) {
-      formData.files.add(MapEntry(
-        'id_back',
-        await MultipartFile.fromFile(idBackPath),
-      ));
+    if (idBackPath != null && idBackPath.isNotEmpty) {
+      final filename = idBackPath.split(RegExp(r'[\\/]')).last;
+      map['id_back'] = await MultipartFile.fromFile(
+        idBackPath,
+        filename: filename,
+        contentType: _getImageMediaType(filename),
+      );
     }
+
+    final formData = FormData.fromMap(map);
 
     // 1. Create technician account
     final response = await _dio.post(
       '/api/auth/register/technician',
       data: formData,
+      options: Options(
+        contentType: 'multipart/form-data',
+      ),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -173,6 +210,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (token != null) {
         await _secureStorage.write(key: 'auth_token', value: token);
         await _secureStorage.write(key: 'auth_role', value: user.role.value);
+        await _secureStorage.write(key: 'auth_user_id', value: user.id.toString());
+        await _secureStorage.write(key: 'auth_user_name', value: user.name);
+        await _secureStorage.write(key: 'auth_user_phone', value: user.phone);
+        if (user.profileImageUrl != null) {
+          await _secureStorage.write(key: 'auth_user_photo', value: user.profileImageUrl);
+        }
+      }
+      if (selfiePath != null && selfiePath.isNotEmpty) {
+        await _secureStorage.write(key: 'auth_local_photo_path', value: selfiePath);
       }
       
       // 2. Set technician services using the new token
@@ -212,13 +258,52 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> getTechnicianProfile() async {
-    final response = await _dio.get('/api/technician/me');
-    if (response.statusCode == 200) {
-      return response.data['data'] as Map<String, dynamic>;
+    final techResponse = await _dio.get('/api/technician/me');
+    if (techResponse.statusCode == 200) {
+      final data = Map<String, dynamic>.from(techResponse.data['data'] as Map);
+
+      try {
+        final authMe = await _dio.get('/api/auth/me');
+        if (authMe.statusCode == 200 && authMe.data != null) {
+          final userData = authMe.data is Map
+              ? (authMe.data['data'] ?? authMe.data['user'] ?? authMe.data)
+              : null;
+          if (userData is Map) {
+            if (userData['name'] != null && userData['name'].toString().isNotEmpty) {
+              data['name'] = userData['name'];
+              await _secureStorage.write(key: 'auth_user_name', value: userData['name'].toString());
+            }
+            if (userData['phone'] != null && userData['phone'].toString().isNotEmpty) {
+              data['phone'] = userData['phone'];
+              await _secureStorage.write(key: 'auth_user_phone', value: userData['phone'].toString());
+            }
+            if (userData['profile_image_url'] != null) {
+              data['profile_photo_url'] = userData['profile_image_url'];
+            }
+          }
+        }
+      } catch (_) {}
+
+      final savedName = await _secureStorage.read(key: 'auth_user_name');
+      final savedPhone = await _secureStorage.read(key: 'auth_user_phone');
+      final savedPhoto = await _secureStorage.read(key: 'auth_user_photo');
+      final localPhoto = await _secureStorage.read(key: 'auth_local_photo_path');
+
+      if ((data['name'] == null || data['name'].toString().isEmpty) && savedName != null) {
+        data['name'] = savedName;
+      }
+      if ((data['phone'] == null || data['phone'].toString().isEmpty) && savedPhone != null) {
+        data['phone'] = savedPhone;
+      }
+      if (data['profile_photo_url'] == null || data['profile_photo_url'].toString().isEmpty) {
+        data['profile_photo_url'] = savedPhoto ?? localPhoto;
+      }
+
+      return data;
     } else {
       throw DioException(
-        requestOptions: response.requestOptions,
-        response: response,
+        requestOptions: techResponse.requestOptions,
+        response: techResponse,
       );
     }
   }

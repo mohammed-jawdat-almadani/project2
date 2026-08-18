@@ -79,9 +79,13 @@ class _SplashPageState extends State<SplashPage> with SingleTickerProviderStateM
         context.go('/login');
       },
       authenticated: (user) {
-        if (user.role == UserRole.technician &&
-            user.technicianStatus != TechnicianStatus.active) {
-          context.go('/activation');
+        if (user.role == UserRole.technician) {
+          if (user.technicianStatus == TechnicianStatus.active ||
+              user.technicianStatus == TechnicianStatus.probation) {
+            context.go('/');
+          } else {
+            context.go('/activation');
+          }
         } else {
           context.go('/');
         }

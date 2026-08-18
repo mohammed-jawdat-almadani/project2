@@ -157,4 +157,18 @@ class HomeRepositoryImpl implements HomeRepository {
       return Left(ServerFailure('حدث خطأ غير متوقع'));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> reportClientNoShow(int orderId) async {
+    try {
+      await _remoteDataSource.reportClientNoShow(orderId);
+      return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure(
+        e.response?.data['message'] ?? 'فشل في رفع بلاغ عدم حضور العميل',
+      ));
+    } catch (e) {
+      return Left(ServerFailure('حدث خطأ غير متوقع'));
+    }
+  }
 }

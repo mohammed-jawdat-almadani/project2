@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/home_bloc.dart';
 import '../bloc/home_event.dart';
 import '../bloc/home_state.dart';
@@ -9,18 +10,68 @@ import '../widgets/home_map_widget.dart';
 import '../widgets/home_bottom_nav_bar.dart';
 import '../widgets/incoming_order_sheet.dart';
 import '../widgets/active_accepted_order_card.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/enums/technician_status.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../orders/presentation/pages/orders_page.dart';
 import '../../../wallet/presentation/pages/wallet_page.dart';
 import '../../../profile/presentation/pages/profile_page.dart';
+import '../../../profile/presentation/bloc/profile_bloc.dart';
+import '../../../profile/presentation/bloc/profile_event.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // Validate technician activation status on entry
+    context.read<AuthBloc>().add(const AuthEvent.checkAuthStatus());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: getIt<HomeBloc>()..add(const HomeEvent.init()),
-      child: const _HomeView(),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              unauthenticated: () {
+                context.go('/login');
+              },
+              authenticated: (user) {
+                if (user.role == UserRole.technician) {
+                  if (user.technicianStatus != TechnicianStatus.active &&
+                      user.technicianStatus != TechnicianStatus.probation) {
+                    context.go('/activation');
+                  }
+                }
+              },
+              error: (_) {
+                context.go('/login');
+              },
+              orElse: () {},
+            );
+          },
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(
+            value: getIt<HomeBloc>()..add(const HomeEvent.init()),
+          ),
+          BlocProvider(
+            create: (context) => getIt<ProfileBloc>()..add(const ProfileEvent.fetchProfile()),
+          ),
+        ],
+        child: const _HomeView(),
+      ),
     );
   }
 }
@@ -61,7 +112,7 @@ class _HomeView extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF8F9FA),
+          backgroundColor: AppColors.background(context),
           body: IndexedStack(
             index: state.currentTab,
             children: [

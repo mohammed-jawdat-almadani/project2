@@ -90,7 +90,7 @@ class OrderCard extends StatelessWidget {
       case 'quote_rejected':
         return context.tr('quote_rejected_header');
       case 'approved':
-        return 'تمت الموافقة على السعر ✅';
+        return context.tr('quote_approved_header');
       case 'parts_waiting':
         return context.tr('parts_waiting_header');
       case 'closure_pending':
@@ -328,8 +328,11 @@ class OrderCard extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton.icon(
                           onPressed: () {
+                            final clientTitle = (order.clientName != null && order.clientName!.isNotEmpty)
+                                ? order.clientName!
+                                : context.tr('client');
                             context.push(
-                              '/chat/${order.id}?clientName=${Uri.encodeComponent(order.clientName ?? "العميل")}',
+                              '/chat/${order.id}?clientName=${Uri.encodeComponent(clientTitle)}',
                             );
                           },
                           icon: const Icon(Icons.chat_bubble_rounded, size: 16),
