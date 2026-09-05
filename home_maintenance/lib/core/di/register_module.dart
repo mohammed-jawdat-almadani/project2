@@ -12,11 +12,10 @@ abstract class RegisterModule {
     final dio = Dio(
       BaseOptions(
         baseUrl: 'https://home-maintenance.me',
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 15),
+        connectTimeout: const Duration(seconds: 25),
+        receiveTimeout: const Duration(seconds: 25),
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json',
         },
       ),
     );
@@ -25,9 +24,13 @@ abstract class RegisterModule {
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           const storage = FlutterSecureStorage();
-          final token = await storage.read(key: 'auth_token');
-          if (token != null) {
-            options.headers['Authorization'] = 'Bearer $token';
+          try {
+            final token = await storage.read(key: 'auth_token');
+            if (token != null) {
+              options.headers['Authorization'] = 'Bearer $token';
+            }
+          } catch (e) {
+            await storage.deleteAll();
           }
           return handler.next(options);
         },

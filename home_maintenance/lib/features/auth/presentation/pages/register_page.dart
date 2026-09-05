@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:formz/formz.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/register/register_bloc.dart';
 import '../widgets/auth_text_field.dart';
@@ -30,8 +32,10 @@ class _RegisterPageView extends StatefulWidget {
 class _RegisterPageViewState extends State<_RegisterPageView> {
   @override
   Widget build(BuildContext context) {
+    final isDark = AppColors.isDark(context);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF8FF),
+      backgroundColor: AppColors.background(context),
       body: MultiBlocListener(
         listeners: [
           BlocListener<AuthBloc, AuthState>(
@@ -42,9 +46,13 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
                 },
                 otpSent: (debugCode) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('تم إرسال الرمز بنجاح. ${debugCode != null ? 'Debug Code: $debugCode' : ''}')),
+                    SnackBar(
+                      content: Text(context.tr('otp_sent_success')),
+                      backgroundColor: const Color(0xFF16A34A),
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   );
-                  // Pass phone from RegisterBloc state to the next page
                   final phone = context.read<RegisterBloc>().state.phone.value;
                   context.push('/register/otp', extra: phone);
                 },
@@ -74,74 +82,68 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
             
             return Stack(
               children: [
-                // Header
+                // Header Gradient
                 Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
                   height: 260,
                   child: Container(
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [Color(0xFF0056D2), Color(0xFF0A3D80)],
+                        colors: isDark
+                            ? [const Color(0xFF0F172A), const Color(0xFF1E293B)]
+                            : [const Color(0xFF003882), const Color(0xFF002255)],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(48),
                         bottomRight: Radius.circular(48),
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        SafeArea(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.arrow_forward, color: Colors.white),
-                                    onPressed: () => context.pop(),
-                                  ),
-                                ),
-                                const Text(
-                                  'تسجيل فني جديد',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(width: 48), // Balance for title centering
-                              ],
+                    child: SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                context.isRtl ? Icons.arrow_forward_rounded : Icons.arrow_back_rounded,
+                                color: Colors.white,
+                              ),
+                              onPressed: () => context.pop(),
                             ),
-                          ),
+                            Text(
+                              context.isArabic ? 'تسجيل فني جديد' : 'New Technician Registration',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(width: 48),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-                // Main Content
+                // Main Content Card
                 SingleChildScrollView(
                   padding: const EdgeInsets.only(top: 226, left: 16, right: 16, bottom: 50),
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.only(top: 50, left: 24, right: 24, bottom: 24),
+                    padding: const EdgeInsets.only(top: 40, left: 24, right: 24, bottom: 24),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface(context),
                       borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: AppColors.border(context)),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 6,
+                          color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.08),
+                          blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
                       ],
@@ -151,19 +153,19 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            const Text(
-                              'حساب جديد',
+                            Text(
+                              context.isArabic ? 'حساب جديد' : 'Create Account',
                               style: TextStyle(
-                                color: Color(0xFF1A1B22),
+                                color: AppColors.textPrimary(context),
                                 fontSize: 24,
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 8),
-                            const Text(
-                              'أدخل رقم هاتفك للبدء',
+                            Text(
+                              context.isArabic ? 'أدخل رقم هاتفك للبدء' : 'Enter your phone number to get started',
                               style: TextStyle(
-                                color: Color(0xFF434652),
+                                color: AppColors.textSecondary(context),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -171,22 +173,22 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
                             const SizedBox(height: 32),
                             AuthTextField(
                               label: '',
-                              hint: 'رقم الهاتف',
+                              hint: context.isArabic ? 'رقم الهاتف' : 'Phone Number',
                               isPhone: true,
                               onChanged: (val) => context.read<RegisterBloc>().add(RegisterEvent.phoneChanged(val)),
                               errorText: state.showErrors && state.phone.isNotValid 
                                   ? (state.phone.error == PhoneValidationError.empty 
-                                      ? 'رقم الهاتف مطلوب' 
-                                      : 'رقم الهاتف يجب أن يتكون من 9 أرقام ويبدأ بـ 9')
+                                      ? (context.isArabic ? 'رقم الهاتف مطلوب' : 'Phone number is required') 
+                                      : (context.isArabic ? 'رقم الهاتف يجب أن يتكون من 9 أرقام ويبدأ بـ 9' : 'Phone must be 9 digits starting with 9'))
                                   : null,
                             ),
                             const SizedBox(height: 16),
                             Align(
-                              alignment: Alignment.centerRight,
-                              child: const Text(
-                                'سنرسل لك رمز تحقق عبر رسالة نصية قصيرة.',
+                              alignment: context.isRtl ? Alignment.centerRight : Alignment.centerLeft,
+                              child: Text(
+                                context.isArabic ? 'سنرسل لك رمز تحقق عبر رسالة نصية قصيرة.' : 'We will send you a verification code via SMS.',
                                 style: TextStyle(
-                                  color: Color(0xFF747784),
+                                  color: AppColors.textMuted(context),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -194,9 +196,9 @@ class _RegisterPageViewState extends State<_RegisterPageView> {
                             ),
                             const SizedBox(height: 32),
                             PrimaryAuthButton(
-                              text: 'متابعة',
+                              text: context.isArabic ? 'متابعة' : 'Continue',
                               isLoading: isLoading,
-                              backgroundColor: const Color(0xFF002B73),
+                              backgroundColor: const Color(0xFF003882),
                               onPressed: () {
                                 context.read<RegisterBloc>().add(const RegisterEvent.submit());
                               },

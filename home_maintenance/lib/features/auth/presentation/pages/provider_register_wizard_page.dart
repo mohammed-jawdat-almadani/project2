@@ -11,6 +11,8 @@ import '../bloc/wizard/provider_register_wizard_bloc.dart';
 import '../widgets/primary_auth_button.dart';
 import '../models/password_input.dart';
 import '../models/confirm_password_input.dart';
+import '../../../../core/enums/user_role.dart';
+import '../../../../core/enums/technician_status.dart';
 
 class ProviderRegisterWizardPage extends StatefulWidget {
   final String ticket;
@@ -86,7 +88,18 @@ class _ProviderRegisterWizardPageState extends State<ProviderRegisterWizardPage>
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, authState) {
             authState.maybeWhen(
-              authenticated: (user) => context.go('/'),
+              authenticated: (user) {
+                if (user.role == UserRole.technician) {
+                  if (user.technicianStatus == TechnicianStatus.active ||
+                      user.technicianStatus == TechnicianStatus.probation) {
+                    context.go('/');
+                  } else {
+                    context.go('/activation');
+                  }
+                } else {
+                  context.go('/');
+                }
+              },
               error: (msg) => ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg))),
               orElse: () {},
             );
@@ -297,7 +310,12 @@ class _ProviderRegisterWizardPageState extends State<ProviderRegisterWizardPage>
   }
 
   Future<void> _pickImage(ImageSource source, Function(XFile?) onPicked) async {
-    final XFile? image = await _picker.pickImage(source: source);
+    final XFile? image = await _picker.pickImage(
+      source: source,
+      maxWidth: 1200,
+      maxHeight: 1200,
+      imageQuality: 80,
+    );
     if (image != null) onPicked(image);
   }
 

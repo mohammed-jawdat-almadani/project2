@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserModel {
 
- int get id; String get name; String get phone; String get role;@JsonKey(name: 'profile_image_url') String? get profileImageUrl;@JsonKey(name: 'phone_verified_at') String? get phoneVerifiedAt;@JsonKey(name: 'created_at') String? get createdAt;
+ int get id; String get name; String get phone;@JsonKey(unknownEnumValue: UserRole.client) UserRole get role;@JsonKey(name: 'profile_image_url') String? get profileImageUrl;@JsonKey(name: 'phone_verified_at') String? get phoneVerifiedAt;@JsonKey(name: 'created_at') String? get createdAt;
 /// Create a copy of UserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $UserModelCopyWith<$Res>  {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) _then) = _$UserModelCopyWithImpl;
 @useResult
 $Res call({
- int id, String name, String phone, String role,@JsonKey(name: 'profile_image_url') String? profileImageUrl,@JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,@JsonKey(name: 'created_at') String? createdAt
+ int id, String name, String phone,@JsonKey(unknownEnumValue: UserRole.client) UserRole role,@JsonKey(name: 'profile_image_url') String? profileImageUrl,@JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -71,7 +71,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
+as UserRole,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,phoneVerifiedAt: freezed == phoneVerifiedAt ? _self.phoneVerifiedAt : phoneVerifiedAt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String phone,  String role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String phone, @JsonKey(unknownEnumValue: UserRole.client)  UserRole role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
 return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl,_that.phoneVerifiedAt,_that.createdAt);case _:
@@ -180,7 +180,7 @@ return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String phone,  String role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String phone, @JsonKey(unknownEnumValue: UserRole.client)  UserRole role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _UserModel():
 return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl,_that.phoneVerifiedAt,_that.createdAt);case _:
@@ -200,7 +200,7 @@ return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String phone,  String role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String phone, @JsonKey(unknownEnumValue: UserRole.client)  UserRole role, @JsonKey(name: 'profile_image_url')  String? profileImageUrl, @JsonKey(name: 'phone_verified_at')  String? phoneVerifiedAt, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _UserModel() when $default != null:
 return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl,_that.phoneVerifiedAt,_that.createdAt);case _:
@@ -215,13 +215,13 @@ return $default(_that.id,_that.name,_that.phone,_that.role,_that.profileImageUrl
 @JsonSerializable()
 
 class _UserModel implements UserModel {
-  const _UserModel({required this.id, required this.name, required this.phone, required this.role, @JsonKey(name: 'profile_image_url') this.profileImageUrl, @JsonKey(name: 'phone_verified_at') this.phoneVerifiedAt, @JsonKey(name: 'created_at') this.createdAt});
+  const _UserModel({required this.id, required this.name, required this.phone, @JsonKey(unknownEnumValue: UserRole.client) required this.role, @JsonKey(name: 'profile_image_url') this.profileImageUrl, @JsonKey(name: 'phone_verified_at') this.phoneVerifiedAt, @JsonKey(name: 'created_at') this.createdAt});
   factory _UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
 @override final  int id;
 @override final  String name;
 @override final  String phone;
-@override final  String role;
+@override@JsonKey(unknownEnumValue: UserRole.client) final  UserRole role;
 @override@JsonKey(name: 'profile_image_url') final  String? profileImageUrl;
 @override@JsonKey(name: 'phone_verified_at') final  String? phoneVerifiedAt;
 @override@JsonKey(name: 'created_at') final  String? createdAt;
@@ -259,7 +259,7 @@ abstract mixin class _$UserModelCopyWith<$Res> implements $UserModelCopyWith<$Re
   factory _$UserModelCopyWith(_UserModel value, $Res Function(_UserModel) _then) = __$UserModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String name, String phone, String role,@JsonKey(name: 'profile_image_url') String? profileImageUrl,@JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,@JsonKey(name: 'created_at') String? createdAt
+ int id, String name, String phone,@JsonKey(unknownEnumValue: UserRole.client) UserRole role,@JsonKey(name: 'profile_image_url') String? profileImageUrl,@JsonKey(name: 'phone_verified_at') String? phoneVerifiedAt,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -282,7 +282,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,phone: null == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
-as String,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
+as UserRole,profileImageUrl: freezed == profileImageUrl ? _self.profileImageUrl : profileImageUrl // ignore: cast_nullable_to_non_nullable
 as String?,phoneVerifiedAt: freezed == phoneVerifiedAt ? _self.phoneVerifiedAt : phoneVerifiedAt // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,

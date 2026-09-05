@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
+import '../../../../core/enums/splash_auth_state.dart';
+import '../../../../core/enums/user_role.dart';
 import '../../domain/entities/user.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../domain/entities/category_model.dart';
@@ -8,9 +10,12 @@ import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/send_register_otp_usecase.dart';
 import '../../domain/usecases/verify_register_otp_usecase.dart';
 import '../../domain/usecases/register_provider_usecase.dart';
+import '../../../../core/enums/technician_status.dart';
 import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../domain/usecases/check_auth_status_usecase.dart';
+import '../../../../core/services/fcm_service.dart';
+import '../../../../core/services/firebase_auth_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -25,6 +30,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ForgotPasswordUseCase forgotPasswordUseCase;
   final GetCategoriesUseCase getCategoriesUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
+  final FcmService _fcmService;
+  final FirebaseAuthService _firebaseAuthService;
 
   AuthBloc(
     this.loginUseCase,
@@ -34,6 +41,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.forgotPasswordUseCase,
     this.getCategoriesUseCase,
     this.checkAuthStatusUseCase,
+    this._fcmService,
+    this._firebaseAuthService,
   ) : super(const AuthState.initial()) {
     on<_Login>(_onLogin);
     on<_RegisterStart>(_onRegisterStart);
@@ -49,19 +58,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await checkAuthStatusUseCase(NoParams());
     result.fold(
       (failure) => emit(const AuthState.unauthenticated()),
-      (isAuthenticated) {
-        if (isAuthenticated) {
-          // Wait, we don't have the User model, but for now we just want to navigate to home.
-          // Since the authenticated state requires a User object, we either fetch the user, 
-          // or we just emit a different state or fake user. 
-          // A better approach is to change the state or load profile.
-          // For now, let's just emit unauthenticated if not authenticated.
-          // If authenticated, we should probably fetch the user. But since we just need to bypass login,
-          // we can emit a fake user or add a simple authenticatedWithoutUser state.
-          // Actually, let's just pass an empty user for now so it routes correctly.
-          emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: 'user')));
-        } else {
-          emit(const AuthState.unauthenticated());
+      (splashState) {
+        switch (splashState) {
+          case SplashAuthState.unauthenticated:
+            emit(const AuthState.unauthenticated());
+            break;
+          case SplashAuthState.client:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.client)));
+            _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
+            break;
+          case SplashAuthState.providerActive:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.active)));
+            _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
+            break;
+          case SplashAuthState.providerPending:
+            emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.pending)));
+            _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
+            break;
         }
       },
     );
@@ -72,7 +88,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUseCase(LoginParams(phone: event.phone, password: event.password));
     result.fold(
       (failure) => emit(AuthState.error(failure.message)),
-      (user) => emit(AuthState.authenticated(user)),
+      (user) {
+        emit(AuthState.authenticated(user));
+        _fcmService.syncToken();
+        _firebaseAuthService.signInWithCustomToken();
+      },
     );
   }
 
@@ -128,7 +148,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
     result.fold(
       (failure) => emit(AuthState.error(failure.message)),
-      (user) => emit(AuthState.authenticated(user)),
+      (user) {
+        emit(AuthState.authenticated(user));
+        _firebaseAuthService.signInWithCustomToken();
+      },
     );
   }
 }
