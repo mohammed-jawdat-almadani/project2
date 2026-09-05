@@ -140,6 +140,8 @@ import '../../features/wallet/domain/usecases/set_sham_cash_account_usecase.dart
 import '../../features/wallet/presentation/bloc/wallet_bloc.dart' as _i87;
 import '../notifications/notification_action_handler.dart' as _i197;
 import '../services/fcm_service.dart' as _i928;
+import '../services/firebase_auth_service.dart' as _i592;
+import '../services/firebase_tracking_service.dart' as _i438;
 import '../services/location_service.dart' as _i669;
 import '../settings/presentation/bloc/settings_bloc.dart' as _i937;
 import 'register_module.dart' as _i291;
@@ -183,6 +185,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i420.ChatRepository>(
       () => _i504.ChatRepositoryImpl(gh<_i980.ChatRemoteDataSource>()),
+    );
+    gh.lazySingleton<_i592.FirebaseAuthService>(
+      () => _i592.FirebaseAuthService(gh<_i361.Dio>()),
     );
     gh.factory<_i325.GetMessagesUseCase>(
       () => _i325.GetMessagesUseCase(gh<_i420.ChatRepository>()),
@@ -240,6 +245,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i245.SetShamCashAccountUseCase>(
       () => _i245.SetShamCashAccountUseCase(gh<_i571.WalletRepository>()),
+    );
+    gh.lazySingleton<_i438.FirebaseTrackingService>(
+      () => _i438.FirebaseTrackingService(
+        gh<_i592.FirebaseAuthService>(),
+        gh<_i669.LocationService>(),
+      ),
     );
     gh.factory<_i65.ChatBloc>(
       () => _i65.ChatBloc(
@@ -355,6 +366,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i332.GetCategoriesUseCase>(),
         gh<_i52.CheckAuthStatusUseCase>(),
         gh<_i928.FcmService>(),
+        gh<_i592.FirebaseAuthService>(),
       ),
     );
     gh.lazySingleton<_i812.ReportClientNoShowUseCase>(
@@ -388,15 +400,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i17.LogoutUseCase>(
       () => _i17.LogoutUseCase(gh<_i894.ProfileRepository>()),
     );
-    gh.factory<_i349.OrdersBloc>(
-      () => _i349.OrdersBloc(
-        gh<_i221.GetOrdersListUseCase>(),
-        gh<_i42.GetOrderDetailsUseCase>(),
-      ),
-    );
-    gh.factory<_i602.ActivationOfficesCubit>(
-      () => _i602.ActivationOfficesCubit(gh<_i180.GetOfficesUseCase>()),
-    );
     gh.lazySingleton<_i202.HomeBloc>(
       () => _i202.HomeBloc(
         gh<_i1033.SetAvailabilityUseCase>(),
@@ -418,7 +421,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i613.VerifyClosureUseCase>(),
         gh<_i669.LocationService>(),
         gh<_i197.NotificationActionHandler>(),
+        gh<_i438.FirebaseTrackingService>(),
       ),
+    );
+    gh.factory<_i349.OrdersBloc>(
+      () => _i349.OrdersBloc(
+        gh<_i221.GetOrdersListUseCase>(),
+        gh<_i42.GetOrderDetailsUseCase>(),
+      ),
+    );
+    gh.factory<_i602.ActivationOfficesCubit>(
+      () => _i602.ActivationOfficesCubit(gh<_i180.GetOfficesUseCase>()),
     );
     gh.factory<_i469.ProfileBloc>(
       () => _i469.ProfileBloc(

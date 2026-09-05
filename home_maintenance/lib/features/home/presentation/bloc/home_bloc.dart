@@ -8,6 +8,7 @@ import '../../../../core/enums/notification_category.dart';
 import '../../../../core/notifications/app_notification_type.dart';
 import '../../../../core/notifications/notification_action_handler.dart';
 import '../../../../core/services/location_service.dart';
+import '../../../../core/services/firebase_tracking_service.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../orders/domain/entities/quote_part.dart';
 import '../../../orders/domain/usecases/get_quotes_usecase.dart';
@@ -52,6 +53,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final VerifyClosureUseCase _verifyClosureUseCase;
   final LocationService _locationService;
   final NotificationActionHandler _notificationHandler;
+  final FirebaseTrackingService _firebaseTrackingService;
 
   StreamSubscription<Position>? _positionSubscription;
   StreamSubscription? _notificationSubscription;
@@ -77,6 +79,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     this._verifyClosureUseCase,
     this._locationService,
     this._notificationHandler,
+    this._firebaseTrackingService,
   ) : super(const HomeState()) {
     // Listen to real-time incoming FCM / Platform notifications
     _notificationSubscription =
@@ -407,6 +410,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           activeOrder: activeOrderFound,
           successMessage: null,
         ));
+
+        // Manage RTDB tracking based on active order state
+        if (activeOrderFound != null) {
+          final s = activeOrderFound!.status?.toLowerCase();
+          if ((s == 'accepted' || s == 'assigned') && activeOrderFound!.arrivedAt == null) {
+            _firebaseTrackingService.startTracking(activeOrderFound!.orderId);
+          } else {
+            _firebaseTrackingService.stopTracking();
+          }
+        } else {
+          _firebaseTrackingService.stopTracking();
+        }
       },
     );
   }
@@ -429,10 +444,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ));
       },
       (_) {
+        final currentAccepted = accepted ?? state.currentOffer;
+        final targetOrderId = currentAccepted?.orderId ?? offerId;
+        _firebaseTrackingService.startTracking(targetOrderId);
+
         emit(state.copyWith(
           isProcessingOffer: false,
           currentOffer: null,
-          activeOrder: accepted ?? state.currentOffer,
+          activeOrder: currentAccepted,
           successMessage: 'تم قبول طلب الصيانة بنجاح!',
         ));
         add(const HomeEvent.fetchOffers());
@@ -500,6 +519,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ));
       },
       (_) {
+        _firebaseTrackingService.stopTracking();
         final updated = state.activeOrder?.copyWith(status: 'arrived');
         emit(state.copyWith(
           isProcessingOffer: false,
@@ -527,6 +547,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         ));
       },
       (_) {
+        _firebaseTrackingService.stopTracking();
         emit(state.copyWith(
           isProcessingOffer: false,
           activeOrder: null,
@@ -784,6 +805,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   @override
   Future<void> close() {
     _stopTracking();
+    _firebaseTrackingService.stopTracking();
     _notificationSubscription?.cancel();
     return super.close();
   }

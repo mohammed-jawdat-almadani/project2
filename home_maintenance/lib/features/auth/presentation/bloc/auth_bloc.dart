@@ -15,6 +15,7 @@ import '../../domain/usecases/forgot_password_usecase.dart';
 import '../../domain/usecases/get_categories_usecase.dart';
 import '../../domain/usecases/check_auth_status_usecase.dart';
 import '../../../../core/services/fcm_service.dart';
+import '../../../../core/services/firebase_auth_service.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -30,6 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final GetCategoriesUseCase getCategoriesUseCase;
   final CheckAuthStatusUseCase checkAuthStatusUseCase;
   final FcmService _fcmService;
+  final FirebaseAuthService _firebaseAuthService;
 
   AuthBloc(
     this.loginUseCase,
@@ -40,6 +42,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this.getCategoriesUseCase,
     this.checkAuthStatusUseCase,
     this._fcmService,
+    this._firebaseAuthService,
   ) : super(const AuthState.initial()) {
     on<_Login>(_onLogin);
     on<_RegisterStart>(_onRegisterStart);
@@ -63,14 +66,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           case SplashAuthState.client:
             emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.client)));
             _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
             break;
           case SplashAuthState.providerActive:
             emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.active)));
             _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
             break;
           case SplashAuthState.providerPending:
             emit(AuthState.authenticated(const User(id: 0, phone: '', name: '', role: UserRole.technician, technicianStatus: TechnicianStatus.pending)));
             _fcmService.syncToken();
+            _firebaseAuthService.signInWithCustomToken();
             break;
         }
       },
@@ -85,6 +91,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (user) {
         emit(AuthState.authenticated(user));
         _fcmService.syncToken();
+        _firebaseAuthService.signInWithCustomToken();
       },
     );
   }
@@ -141,7 +148,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     ));
     result.fold(
       (failure) => emit(AuthState.error(failure.message)),
-      (user) => emit(AuthState.authenticated(user)),
+      (user) {
+        emit(AuthState.authenticated(user));
+        _firebaseAuthService.signInWithCustomToken();
+      },
     );
   }
 }
